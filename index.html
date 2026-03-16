@@ -2421,8 +2421,6 @@ async function autoTitle(userMsg,aiReply,chat){
   }catch(e){/* silently fail */}
 }
 
-// Together AI key for image generation
-const TOGETHER_KEY='tgp_v1_6hLgJyP5P8UiyWARlacIhreshMGJ4d51KFjW7cVoUZ4';
 
 // ── IMAGE GENERATION via Replicate Flux Schnell ──
 async function genImg(prompt){
@@ -2432,76 +2430,64 @@ async function genImg(prompt){
   const lid='ig'+Date.now();
   bubble.innerHTML=`<div class="mav"><span style="font-size:11px;font-weight:900;color:var(--gold2)">B</span></div>
     <div class="mb2" id="${lid}">
-      <div style="display:flex;align-items:center;gap:10px;color:rgba(201,168,76,.6);font-size:13px">
-        <span style="width:18px;height:18px;border:2px solid rgba(201,168,76,.3);border-top-color:var(--gold);border-radius:50%;display:inline-block;animation:spin .8s linear infinite;flex-shrink:0"></span>
+      <div style="display:flex;align-items:center;gap:10px;color:rgba(201,168,76,.6);font-size:13px;margin-bottom:8px">
+        <span style="width:16px;height:16px;border:2px solid rgba(201,168,76,.3);border-top-color:var(--gold);border-radius:50%;display:inline-block;animation:spin .8s linear infinite;flex-shrink:0"></span>
         Generating image…
       </div>
-      <div style="margin-top:8px;width:100%;max-width:420px;height:300px;background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.1);border-radius:8px;overflow:hidden;position:relative">
-        <div style="position:absolute;inset:0;background:linear-gradient(90deg,transparent 0%,rgba(201,168,76,.06) 50%,transparent 100%);animation:shimmer 1.6s infinite"></div>
+      <div style="width:100%;max-width:420px;height:300px;background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.1);border-radius:8px;overflow:hidden;position:relative">
+        <div style="position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(201,168,76,.06),transparent);animation:shimmer 1.6s infinite"></div>
       </div>
     </div>`;
   msgs.appendChild(bubble);
   msgs.scrollTop=9999;
 
+  const seed=Math.floor(Math.random()*99999);
+  const url='https://image.pollinations.ai/prompt/'+encodeURIComponent(prompt)+'?seed='+seed+'&nologo=true&width=1024&height=1024';
+
+  // Fetch as blob — works on HTTPS (GitHub Pages)
   try{
-    const res=await fetch('https://api.together.xyz/v1/images/generations',{
-      method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':'Bearer '+TOGETHER_KEY},
-      body:JSON.stringify({
-        model:'black-forest-labs/FLUX.1-schnell-Free',
-        prompt:prompt,
-        width:1024,
-        height:1024,
-        steps:4,
-        n:1
-      })
-    });
+    const res=await fetch(url);
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const blob=await res.blob();
+    if(blob.size<1000) throw new Error('Image too small — generation may have failed');
+    const objUrl=URL.createObjectURL(blob);
 
-    if(!res.ok){
-      const e=await res.json().catch(()=>({}));
-      throw new Error(e?.error?.message||'API error '+res.status);
-    }
+    const el=document.getElementById(lid);
+    if(!el)return;
 
-    const data=await res.json();
-    // Together returns either b64_json or url depending on plan
-    const imgData=data?.data?.[0];
-    if(!imgData) throw new Error('No image returned');
-
-    const el=document.getElementById(lid);if(!el)return;
     const img=document.createElement('img');
-
-    if(imgData.b64_json){
-      img.src='data:image/png;base64,'+imgData.b64_json;
-    } else if(imgData.url){
-      img.src=imgData.url;
-    } else {
-      throw new Error('No image data in response');
-    }
-
-    img.style.cssText='max-width:100%;border-radius:12px;display:block;box-shadow:0 8px 40px rgba(0,0,0,.6);margin-top:4px;cursor:zoom-in;border:1px solid rgba(201,168,76,.15)';
-    img.onclick=()=>openLightbox(img.src);
-    img.onerror=()=>{el.innerHTML='⚠️ Image loaded but failed to display';};
+    img.src=objUrl;
+    img.style.cssText='max-width:100%;border-radius:12px;display:block;box-shadow:0 8px 40px rgba(0,0,0,.6);cursor:zoom-in;border:1px solid rgba(201,168,76,.15)';
+    img.onclick=()=>openLightbox(objUrl);
     el.innerHTML='';
     el.appendChild(img);
 
     const acts=document.createElement('div');
     acts.style.cssText='display:flex;gap:8px;margin-top:10px;flex-wrap:wrap';
+
     const rb=document.createElement('button');
     rb.style.cssText='border:1px solid rgba(201,168,76,.3);background:none;color:var(--gold2);font-size:12px;cursor:pointer;padding:5px 14px;font-family:inherit';
-    rb.textContent='🔄 Regenerate';rb.onclick=()=>genImg(prompt);
+    rb.textContent='🔄 Regenerate';
+    rb.onclick=()=>genImg(prompt);
+
     const dlb=document.createElement('button');
-    dlb.style.cssText=rb.style.cssText;dlb.textContent='⬇ Save';
+    dlb.style.cssText=rb.style.cssText;
+    dlb.textContent='⬇ Save';
     dlb.onclick=()=>{
       const a=document.createElement('a');
-      a.href=img.src;a.download='blemie-image.png';a.click();
+      a.href=objUrl;a.download='blemie-image.png';a.click();
     };
-    acts.appendChild(rb);acts.appendChild(dlb);
+
+    const opn=document.createElement('a');
+    opn.href=url;opn.target='_blank';opn.className='dl';opn.textContent='🔗 Full size';
+
+    acts.appendChild(rb);acts.appendChild(dlb);acts.appendChild(opn);
     el.appendChild(acts);
     msgs.scrollTop=9999;
 
   }catch(err){
     const el=document.getElementById(lid);
-    if(el)el.innerHTML=`⚠️ Image failed: ${err.message}`;
+    if(el)el.innerHTML=`⚠️ Image failed: ${err.message} — <a href="${url}" target="_blank" style="color:var(--gold2)">try opening directly ↗</a>`;
     console.error('[genImg]',err);
   }
 }
