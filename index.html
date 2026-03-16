@@ -99,8 +99,8 @@ button:active,a:active,.ci:active,.sg:active,.pers-item:active,.gib:active{opaci
 @keyframes toastIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 
 /* ── FOCUS MODE ── */
-body.focus-mode #sb,body.focus-mode .topbar{display:none!important}
-body.focus-mode #main{width:100vw}
+body.focus-mode #sb,body.focus-mode body.focus-mode .topbar{display:none!important}
+body.focus-mode #main{width:100vw;position:relative}
 #focus-exit{display:none;position:fixed;top:12px;right:12px;z-index:50;background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.2);color:rgba(201,168,76,.6);width:32px;height:32px;cursor:pointer;font-size:14px;align-items:center;justify-content:center}
 body.focus-mode #focus-exit{display:flex}
 
@@ -590,7 +590,7 @@ body::before{content:'';position:fixed;inset:0;background:
 #ov.on{display:block}
 
 /* ── TOPBAR ── */
-#main{flex:1;display:flex;flex-direction:column;min-width:0;height:100vh;overflow:hidden;position:relative}
+#main{flex:1;display:flex;flex-direction:column;min-width:0;height:100vh;overflow:hidden}
 .topbar{
   display:flex;align-items:center;gap:10px;
   padding:12px 20px 10px;
@@ -878,8 +878,8 @@ body::before{content:'';position:fixed;inset:0;background:
 .pers-desc{font-size:11px;color:rgba(240,230,208,.35);line-height:1.4}
 
 /* Custom cursor */
-#cursor-dot{position:fixed;width:7px;height:7px;background:var(--gold2);border-radius:50%;pointer-events:none;z-index:9999;left:0;top:0;box-shadow:0 0 10px rgba(201,168,76,.9),0 0 20px rgba(201,168,76,.4);transition:opacity .2s;will-change:transform;opacity:0}
-#cursor-ring{position:fixed;width:32px;height:32px;border:1.5px solid rgba(201,168,76,.45);border-radius:50%;pointer-events:none;z-index:9998;left:0;top:0;transition:width .12s ease,height .12s ease,border-color .12s ease,opacity .2s;will-change:transform;opacity:0}
+#cursor-dot{position:fixed;width:7px;height:7px;background:var(--gold2);border-radius:50%;pointer-events:none;z-index:9999;left:0;top:0;visibility:hidden;box-shadow:0 0 10px rgba(201,168,76,.9),0 0 20px rgba(201,168,76,.4);transition:opacity .2s;will-change:transform}
+#cursor-ring{position:fixed;width:32px;height:32px;border:1.5px solid rgba(201,168,76,.45);border-radius:50%;pointer-events:none;z-index:9998;left:0;top:0;transition:width .12s ease,height .12s ease,border-color .12s ease,opacity .2s;will-change:transform}
 
 /* Image gen status */
 .img-gen-wrap{display:flex;flex-direction:column;gap:8px}
@@ -1430,23 +1430,17 @@ button:active:not(:disabled),a:active,.ci:active,.sg:active,.pers-item:active,.n
 <input type="file" id="fi" accept="*/*" onchange="fup(event)">
 
 <script>
-// ── BAIL TIMER: runs first, before anything can fail ──
-const _bail=setTimeout(function(){
-  var l=document.getElementById('loading');if(l)l.style.display='none';
-  var a=document.getElementById('auth');if(a)a.style.display='flex';
-},1500);
-
+// Bail timer - fires if JS crashes or Supabase hangs
+var _bail=setTimeout(function(){var l=document.getElementById('loading');if(l)l.style.display='none';var a=document.getElementById('auth');if(a)a.style.display='flex';},1500);
 const SURL='https://ufyngztqwgrdfakubbqh.supabase.co';
 const SKEY='sb_publishable_UqIXsop7OG0LclJJzWGoSQ_5s8ze8fB';
 const GK='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';
 var sb;
-try{ sb=supabase.createClient(SURL,SKEY); }
-catch(e){ console.error('Supabase init failed',e); sb=null; }
+try{ sb=supabase.createClient(SURL,SKEY); }catch(e){ sb=null; console.error('Supabase failed',e); }
 let busy=false,att=null,shown=window.innerWidth>=700,chats=[],cid=null,hist=[],cu=null,am='login';
 
 // Init — always hide loading, even on error
 const hideLoading=()=>{
-  clearTimeout(_bail);
   const l=document.getElementById('loading');
   if(l)l.style.display='none';
 };
@@ -2202,6 +2196,7 @@ async function send(){
             const tok=j.choices?.[0]?.delta?.content||'';
             reply+=tok;
             // Strip think tags on the fly
+            if(reply.includes('[GENIMAGE:'))continue;
             const display=reply.replace(/<think>[\s\S]*?<\/think>/gi,'').replace(/<think>[\s\S]*/gi,'');
             streamBub.innerHTML=renderMd(display)+'<span class="stream-cursor">▋</span>';
             document.getElementById('msgs').scrollTop=9999;
@@ -2226,7 +2221,11 @@ async function send(){
 
     // Image gen trigger
     const imgMatch=reply.match(/\[GENIMAGE:\s*([\s\S]+?)\]/);
-    if(imgMatch){genImg(imgMatch[1].trim());return;}
+    if(imgMatch){
+      // Remove the streaming bubble before generating image
+      if(streamDiv&&streamDiv.parentNode)streamDiv.remove();
+      genImg(imgMatch[1].trim());return;
+    }
 
     // File trigger
     const fileMatches=[...reply.matchAll(/\[FILE:(.+?)\]([\s\S]*?)\[\/FILE\]/g)];
@@ -2403,7 +2402,8 @@ async function autoTitle(userMsg,aiReply,chat){
   }catch(e){/* silently fail */}
 }
 
-const RK='r8_MvDfqXzHji5sA3pT1aDxHsWn3pX89kQ0qTFbI';
+// Together AI key for image generation
+const TOGETHER_KEY='tgp_v1_6hLgJyP5P8UiyWARlacIhreshMGJ4d51KFjW7cVoUZ4';
 
 // ── IMAGE GENERATION via Replicate Flux Schnell ──
 async function genImg(prompt){
@@ -2415,7 +2415,7 @@ async function genImg(prompt){
     <div class="mb2" id="${lid}">
       <div style="display:flex;align-items:center;gap:10px;color:rgba(201,168,76,.6);font-size:13px">
         <span style="width:18px;height:18px;border:2px solid rgba(201,168,76,.3);border-top-color:var(--gold);border-radius:50%;display:inline-block;animation:spin .8s linear infinite;flex-shrink:0"></span>
-        Generating image…
+        Generating image… <span style="font-size:11px;opacity:.6">(~8s)</span>
       </div>
       <div style="margin-top:8px;width:100%;max-width:420px;height:300px;background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.1);border-radius:8px;overflow:hidden;position:relative">
         <div style="position:absolute;inset:0;background:linear-gradient(90deg,transparent 0%,rgba(201,168,76,.06) 50%,transparent 100%);animation:shimmer 1.6s infinite"></div>
@@ -2424,50 +2424,58 @@ async function genImg(prompt){
   msgs.appendChild(bubble);
   msgs.scrollTop=9999;
 
-  const seed=Math.floor(Math.random()*999999);
-  const url='https://image.pollinations.ai/prompt/'+encodeURIComponent(prompt)+'?seed='+seed+'&width=1024&height=1024&nologo=true&enhance=true&model=flux';
+  try{
+    const res=await fetch('https://api.together.xyz/v1/images/generations',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+TOGETHER_KEY},
+      body:JSON.stringify({
+        model:'black-forest-labs/FLUX.1-schnell-Free',
+        prompt:prompt,
+        width:1024,height:1024,steps:4,n:1,
+        response_format:'b64_json'
+      })
+    });
 
-  const img=new Image();
-  img.crossOrigin='anonymous';
-
-  const timer=setTimeout(()=>{
-    img.src='';
-    const el=document.getElementById(lid);
-    if(el)el.innerHTML='⚠️ Timed out — <a href="'+url+'" target="_blank" style="color:var(--gold2)">open directly ↗</a>';
-  },90000);
-
-  img.onload=function(){
-    clearTimeout(timer);
-    if(img.naturalWidth<10){
-      const el=document.getElementById(lid);
-      if(el)el.innerHTML='⚠️ Generation failed — <a href="'+url+'" target="_blank" style="color:var(--gold2)">open directly ↗</a>';
-      return;
+    if(!res.ok){
+      const e=await res.json().catch(()=>({}));
+      throw new Error(e?.error?.message||'API error '+res.status);
     }
-    const el=document.getElementById(lid);
-    if(!el)return;
+
+    const data=await res.json();
+    const b64=data?.data?.[0]?.b64_json;
+    if(!b64) throw new Error('No image data returned');
+
+    const imgSrc='data:image/png;base64,'+b64;
+    const el=document.getElementById(lid);if(!el)return;
+
+    const img=document.createElement('img');
+    img.src=imgSrc;
     img.style.cssText='max-width:100%;border-radius:12px;display:block;box-shadow:0 8px 40px rgba(0,0,0,.6);margin-top:4px;cursor:zoom-in;border:1px solid rgba(201,168,76,.15)';
-    img.onclick=()=>typeof openLightbox==='function'?openLightbox(url):window.open(url,'_blank');
-    el.innerHTML='';
-    el.appendChild(img);
+    img.onclick=()=>openLightbox(imgSrc);
+    el.innerHTML='';el.appendChild(img);
+
     const acts=document.createElement('div');
     acts.style.cssText='display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;align-items:center';
-    const a1=document.createElement('a');a1.href=url;a1.target='_blank';a1.className='dl';a1.textContent='🔗 Full size';
     const rb=document.createElement('button');
     rb.style.cssText='border:1px solid rgba(201,168,76,.3);background:none;color:var(--gold2);font-size:12px;cursor:pointer;padding:5px 14px;font-family:inherit;letter-spacing:.04em';
     rb.textContent='🔄 Regenerate';rb.onclick=()=>genImg(prompt);
-    acts.appendChild(a1);acts.appendChild(rb);
+    const dlb=document.createElement('button');
+    dlb.style.cssText=rb.style.cssText;dlb.textContent='⬇ Save';
+    dlb.onclick=()=>{
+      const a=document.createElement('a');
+      a.href=imgSrc;a.download='blemie-image.png';a.click();
+    };
+    acts.appendChild(rb);acts.appendChild(dlb);
     el.appendChild(acts);
     msgs.scrollTop=9999;
-  };
 
-  img.onerror=function(){
-    clearTimeout(timer);
+  }catch(err){
     const el=document.getElementById(lid);
-    if(el)el.innerHTML='⚠️ Failed — <a href="'+url+'" target="_blank" style="color:var(--gold2)">open directly ↗</a>';
-  };
-
-  img.src=url;
+    if(el)el.innerHTML=`⚠️ Image failed: ${err.message}`;
+    console.error('[genImg]',err);
+  }
 }
+
 
 async function deleteAccount(){
   if(!confirm('⚠️ Are you sure? This will permanently delete your account and ALL your chats. This cannot be undone!'))return;
@@ -3105,12 +3113,10 @@ function loadAllSettings(){
   let rx=0,ry=0;
   let hovering=false;
 
-  // Dot snaps directly to mouse — no lag, reveal on first move
-  let _cursorReady=false;
+  // Dot snaps directly to mouse — no lag
   document.addEventListener('mousemove',e=>{
     mx=e.clientX;my=e.clientY;
     dot.style.transform=`translate(${mx-3.5}px,${my-3.5}px)`;
-    if(!_cursorReady){_cursorReady=true;dot.style.opacity='1';ring.style.opacity='1';}
   });
 
   // Ring smoothly lerps behind the dot
@@ -3125,8 +3131,8 @@ function loadAllSettings(){
   tick();
 
   // Hide/show on leave/enter
-  document.addEventListener('mouseleave',()=>{dot.style.opacity='0';ring.style.opacity='0';});
-  document.addEventListener('mouseenter',()=>{dot.style.opacity='1';ring.style.opacity='1';});
+  document.addEventListener('mouseleave',()=>{dot.style.visibility='hidden';ring.style.visibility='hidden';});
+  document.addEventListener('mouseenter',()=>{if(_cursorShown){dot.style.visibility='visible';ring.style.visibility='visible';}});
 
   // Click pulse
   document.addEventListener('mousedown',()=>{
@@ -3198,10 +3204,10 @@ function addTyping(){
   setInterval(spawnMeteor,1800+Math.random()*2000);
 
 
-  let mx=-50,my=-50;
+  let mx=0,my=0,_cursorShown=false;
   const dot=document.getElementById('cursor-dot');
   const ring=document.getElementById('cursor-ring');
-  document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;if(dot)dot.style.opacity='1';if(ring)ring.style.opacity='1';});
+  document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;if(!_cursorShown){_cursorShown=true;if(dot)dot.style.visibility='visible';if(ring)ring.style.visibility='visible';}dot.style.transform='translate('+(mx-3.5)+'px,'+(my-3.5)+'px)';});
 
   function draw(){
     ctx.clearRect(0,0,W,H);
