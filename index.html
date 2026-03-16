@@ -1528,10 +1528,28 @@ function setupUI(){
     wlcInp.addEventListener('input',function(){this.style.height='auto';this.style.height=Math.min(this.scrollHeight,160)+'px';});
   }
   if(wlcSendBtn)wlcSendBtn.onclick=function(){wlcSend();};
-  const chipMap={'wc1':'Write me a poem about me','wc2':'generate image of a futuristic neon city at night','wc3':'Tell me something wild I probably don\'t know','wc4':'What can you do?'};
-  Object.keys(chipMap).forEach(function(id){
+  const chipPool=[
+    'Write me a poem about me','generate image of a neon dragon','Tell me something wild I probably don\'t know',
+    'What can you do?','Explain quantum physics simply','Write a short scary story',
+    'generate image of a futuristic city at night','Give me a life hack I\'ve never heard',
+    'Write a rap about coding','generate image of a magical forest',
+    'What\'s the most mind-blowing fact about space?','Roast me gently',
+    'generate image of a cyberpunk samurai','Write me a motivational speech',
+    'Tell me a joke that\'s actually funny','generate image of an underwater palace',
+    'What would you do if you were human for a day?','Help me write a tweet that goes viral',
+    'generate image of a golden phoenix','Explain the meaning of life in 3 sentences'
+  ];
+  // Pick 4 random unique ones
+  const shuffled=chipPool.sort(()=>Math.random()-.5).slice(0,4);
+  ['wc1','wc2','wc3','wc4'].forEach(function(id,i){
     const el=document.getElementById(id);
-    if(el)el.onclick=(function(p){return function(){wlcFill(p);};})(chipMap[id]);
+    if(el){
+      // Keep emoji prefix based on content
+      const p=shuffled[i];
+      const emoji=p.startsWith('generate')?'🎨':p.includes('poem')||p.includes('story')||p.includes('rap')||p.includes('speech')?'✍️':p.includes('?')||p.includes('fact')||p.includes('life')?'🤯':'✨';
+      el.textContent=emoji+' '+p.replace('generate image of ','');
+      el.onclick=(function(prompt){return function(){wlcFill(prompt);};})(p);
+    }
   });
 
   if(cu?.id==='guest'){
@@ -2423,7 +2441,10 @@ async function autoTitle(userMsg,aiReply,chat){
 
 
 // ── IMAGE GENERATION via Replicate Flux Schnell ──
-async function genImg(prompt){
+async function genImg(prompt,_attempt){
+  _attempt=_attempt||1;
+  const MAX_ATTEMPTS=3;
+
   const msgs=document.getElementById('msgs');
   const bubble=document.createElement('div');
   bubble.className='msg ai';
@@ -2432,7 +2453,7 @@ async function genImg(prompt){
     <div class="mb2" id="${lid}">
       <div style="display:flex;align-items:center;gap:10px;color:rgba(201,168,76,.6);font-size:13px;margin-bottom:8px">
         <span style="width:16px;height:16px;border:2px solid rgba(201,168,76,.3);border-top-color:var(--gold);border-radius:50%;display:inline-block;animation:spin .8s linear infinite;flex-shrink:0"></span>
-        Generating image…
+        ${_attempt>1?'Retrying (attempt '+_attempt+'/'+MAX_ATTEMPTS+')…':'Generating image…'}
       </div>
       <div style="width:100%;max-width:420px;height:300px;background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.1);border-radius:8px;overflow:hidden;position:relative">
         <div style="position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(201,168,76,.06),transparent);animation:shimmer 1.6s infinite"></div>
@@ -2442,16 +2463,22 @@ async function genImg(prompt){
   msgs.scrollTop=9999;
 
   const seed=Math.floor(Math.random()*99999);
-  const url='https://image.pollinations.ai/prompt/'+encodeURIComponent(prompt)+'?seed='+seed+'&nologo=true&width=1024&height=1024';
+  const url='https://image.pollinations.ai/prompt/'+encodeURIComponent(prompt)
+    +'?seed='+seed+'&nologo=true&width=1024&height=1024&token=pk_GnH7DiH22TCZOTWk';
 
-  // Fetch as blob — works on HTTPS (GitHub Pages)
   try{
-    const res=await fetch(url);
-    if(!res.ok) throw new Error('HTTP '+res.status);
-    const blob=await res.blob();
-    if(blob.size<1000) throw new Error('Image too small — generation may have failed');
-    const objUrl=URL.createObjectURL(blob);
+    const controller=new AbortController();
+    const timeout=setTimeout(()=>controller.abort(),60000);
 
+    const res=await fetch(url,{signal:controller.signal});
+    clearTimeout(timeout);
+
+    if(!res.ok) throw new Error('HTTP '+res.status);
+
+    const blob=await res.blob();
+    if(blob.size<1000) throw new Error('Image too small');
+
+    const objUrl=URL.createObjectURL(blob);
     const el=document.getElementById(lid);
     if(!el)return;
 
@@ -2463,23 +2490,20 @@ async function genImg(prompt){
     el.appendChild(img);
 
     const acts=document.createElement('div');
-    acts.style.cssText='display:flex;gap:8px;margin-top:10px;flex-wrap:wrap';
+    acts.style.cssText='display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;align-items:center';
 
     const rb=document.createElement('button');
     rb.style.cssText='border:1px solid rgba(201,168,76,.3);background:none;color:var(--gold2);font-size:12px;cursor:pointer;padding:5px 14px;font-family:inherit';
     rb.textContent='🔄 Regenerate';
-    rb.onclick=()=>genImg(prompt);
+    rb.onclick=()=>{el.closest('.msg').remove();genImg(prompt);};
 
     const dlb=document.createElement('button');
     dlb.style.cssText=rb.style.cssText;
     dlb.textContent='⬇ Save';
-    dlb.onclick=()=>{
-      const a=document.createElement('a');
-      a.href=objUrl;a.download='blemie-image.png';a.click();
-    };
+    dlb.onclick=()=>{const a=document.createElement('a');a.href=objUrl;a.download='blemie-image.png';a.click();};
 
     const opn=document.createElement('a');
-    opn.href=url;opn.target='_blank';opn.className='dl';opn.textContent='🔗 Full size';
+    opn.href=url;opn.target='_blank';opn.className='dl';opn.textContent='🔗 Open';
 
     acts.appendChild(rb);acts.appendChild(dlb);acts.appendChild(opn);
     el.appendChild(acts);
@@ -2487,8 +2511,27 @@ async function genImg(prompt){
 
   }catch(err){
     const el=document.getElementById(lid);
-    if(el)el.innerHTML=`⚠️ Image failed: ${err.message} — <a href="${url}" target="_blank" style="color:var(--gold2)">try opening directly ↗</a>`;
-    console.error('[genImg]',err);
+    if(!el)return;
+
+    // Auto-retry if we haven't hit max attempts
+    if(_attempt<MAX_ATTEMPTS && err.name!=='AbortError'){
+      el.innerHTML=`<span style="color:rgba(201,168,76,.5);font-size:13px">⚠️ Attempt ${_attempt} failed, retrying in 3s…</span>`;
+      setTimeout(()=>{
+        const b=el.closest('.msg');if(b)b.remove();
+        genImg(prompt,_attempt+1);
+      },3000);
+      return;
+    }
+
+    // All attempts failed
+    el.innerHTML=`<div style="font-size:13px">
+      ⚠️ Image generation failed after ${MAX_ATTEMPTS} attempts.
+      <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+        <button onclick="this.closest('.msg').remove();genImg('${prompt.replace(/'/g,'\\'+'')}')" style="border:1px solid rgba(201,168,76,.3);background:none;color:var(--gold2);font-size:12px;cursor:pointer;padding:5px 14px;font-family:inherit">🔄 Try Again</button>
+        <a href="${url}" target="_blank" style="border:1px solid rgba(201,168,76,.2);color:rgba(201,168,76,.6);font-size:12px;padding:5px 14px;text-decoration:none">🔗 Open directly</a>
+      </div>
+    </div>`;
+    console.error('[genImg] failed after',MAX_ATTEMPTS,'attempts:',err.message);
   }
 }
 
