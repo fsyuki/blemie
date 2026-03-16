@@ -49,6 +49,149 @@ button:active,a:active,.ci:active,.sg:active,.pers-item:active,.gib:active{opaci
 
 .code-block{background:rgba(201,168,76,.05);border:1px solid rgba(201,168,76,.15);padding:12px 14px;font-family:monospace;font-size:13px;margin:8px 0;white-space:pre-wrap;overflow-x:auto;display:block;border-left:2px solid rgba(201,168,76,.4);line-height:1.5}
 .inline-code{background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.2);padding:1px 5px;font-family:monospace;font-size:13px}
+
+/* ── CODE BLOCK FANCY ── */
+.code-block-fancy{background:rgba(10,8,5,.7);border:1px solid rgba(201,168,76,.15);border-left:2px solid var(--gold);margin:10px 0;overflow:hidden;position:relative}
+.code-block-fancy .code-lang{font-size:10px;color:rgba(201,168,76,.5);letter-spacing:.12em;text-transform:uppercase;padding:6px 12px 4px;border-bottom:1px solid rgba(201,168,76,.08);background:rgba(201,168,76,.03)}
+.code-block-fancy code{display:block;padding:12px 14px;font-family:monospace;font-size:13px;line-height:1.6;white-space:pre-wrap;overflow-x:auto;color:#f0e6d0}
+
+/* ── STREAMING CURSOR ── */
+.stream-cursor{display:inline-block;width:2px;height:14px;background:var(--gold);margin-left:2px;vertical-align:middle;animation:blink .7s step-end infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+/* ── SHIMMER ── */
+@keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(200%)}}
+
+/* ── DRAG & DROP OVERLAY ── */
+#drop-overlay{display:none;position:fixed;inset:0;z-index:500;background:rgba(8,7,5,.92);border:2px dashed rgba(201,168,76,.5);align-items:center;justify-content:center;flex-direction:column;gap:16px;pointer-events:none}
+#drop-overlay.active{display:flex;pointer-events:all}
+.drop-icon{font-size:52px;animation:bounce .6s ease infinite alternate}
+.drop-txt{font-family:'Cabinet Grotesk',sans-serif;font-size:22px;font-weight:900;color:var(--gold2)}
+.drop-sub{font-size:13px;color:rgba(201,168,76,.5)}
+@keyframes bounce{from{transform:translateY(0)}to{transform:translateY(-10px)}}
+
+/* ── REACTIONS ── */
+.react-bar{display:none;position:absolute;bottom:calc(100% + 6px);right:0;background:#0f0d09;border:1px solid rgba(201,168,76,.2);padding:5px 8px;gap:4px;z-index:20;box-shadow:0 8px 32px rgba(0,0,0,.5)}
+.msg:hover .react-bar,.react-bar:hover{display:flex}
+.msg.ai .mb2,.msg.u .mb2{position:relative}
+.react-btn{background:none;border:none;font-size:16px;cursor:pointer;padding:3px 5px;border-radius:4px;transition:transform .1s}
+.react-btn:hover{transform:scale(1.3)}
+.reaction-badges{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+.reaction-badge{display:inline-flex;align-items:center;gap:3px;background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.18);padding:2px 8px;font-size:12px;cursor:pointer;transition:background .12s}
+.reaction-badge:hover{background:rgba(201,168,76,.15)}
+.reaction-badge.mine{border-color:rgba(201,168,76,.4);background:rgba(201,168,76,.12)}
+
+/* ── TOAST ── */
+#toast-container{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:999;display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none}
+.toast{padding:10px 20px;font-size:13px;font-family:'Instrument Sans',sans-serif;border:1px solid rgba(201,168,76,.25);background:#0f0d09;color:#f0e6d0;letter-spacing:.04em;box-shadow:0 8px 32px rgba(0,0,0,.5);animation:toastIn .25s cubic-bezier(.16,1,.3,1) both;white-space:nowrap}
+.toast.offline{border-color:rgba(255,80,80,.35);color:#ff8080}
+.toast.online{border-color:rgba(74,222,128,.35);color:#4ade80}
+.toast.info{border-color:rgba(201,168,76,.35);color:var(--gold2)}
+@keyframes toastIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+
+/* ── FOCUS MODE ── */
+body.focus-mode #sb,body.focus-mode .topbar{display:none!important}
+body.focus-mode #main{width:100vw}
+#focus-exit{display:none;position:fixed;top:12px;right:12px;z-index:50;background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.2);color:rgba(201,168,76,.6);width:32px;height:32px;cursor:pointer;font-size:14px;align-items:center;justify-content:center}
+body.focus-mode #focus-exit{display:flex}
+
+/* ── KEYBOARD SHORTCUTS MODAL ── */
+#kb-modal{display:none;position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.8);align-items:center;justify-content:center}
+#kb-modal.open{display:flex}
+.kb-box{background:#0c0a07;border:1px solid rgba(201,168,76,.2);width:100%;max-width:480px;margin:20px;padding:28px;animation:fadeUp .25s cubic-bezier(.16,1,.3,1) both;position:relative}
+.kb-title{font-family:'Cabinet Grotesk',sans-serif;font-size:18px;font-weight:900;color:var(--gold2);margin-bottom:20px}
+.kb-row{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid rgba(201,168,76,.07);font-size:13px;color:rgba(240,230,208,.6)}
+.kb-row:last-child{border-bottom:none}
+.key{background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.2);color:var(--gold2);font-size:11px;padding:3px 8px;font-family:monospace;letter-spacing:.04em;display:inline-block;margin-left:4px}
+
+/* ── LIGHT THEME ── */
+body.light{--bg:#faf8f4;--surface:#f5f1e8;--s2:#ede8d8;--s3:#e5dfc8;--tx:#2a2010;--tx2:#6b5a30;--tx3:rgba(140,100,20,0.5);--b1:rgba(160,120,40,0.1);--b2:rgba(160,120,40,0.18)}
+body.light #auth,body.light #app{background:var(--bg)}
+body.light #auth-bg{background:var(--bg)}
+body.light #sb{background:rgba(245,241,232,.97)}
+body.light .mb2{color:var(--tx)}
+body.light .topbar{background:rgba(245,241,232,.9)}
+body.light #welcome{background:var(--bg)}
+body.light .grok-input-box{background:rgba(160,120,40,.06);border-color:rgba(160,120,40,.2)}
+
+/* ── GLOWING INPUT ── */
+.grok-input-box{transition:box-shadow .3s ease}
+.grok-input-box.typing{box-shadow:0 0 0 1px rgba(201,168,76,.4),0 0 20px rgba(201,168,76,.15),0 0 40px rgba(201,168,76,.08)}
+
+/* ── MESSAGE TIMESTAMPS ── */
+.msg-time{font-size:10px;color:rgba(201,168,76,.3);margin-top:5px;letter-spacing:.04em}
+.msg.u .msg-time{text-align:right}
+
+/* ── ANIMATED GRADIENT BORDER on active chat ── */
+.ci.on{background:rgba(201,168,76,.04);border-bottom-color:var(--gold);position:relative;overflow:hidden}
+.ci.on::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:linear-gradient(180deg,var(--gold2),var(--gold3),var(--gold2));background-size:100% 200%;animation:gradMove 2s linear infinite}
+@keyframes gradMove{0%{background-position:0 0}100%{background-position:0 200%}}
+
+/* ── RIPPLE ── */
+.ripple-host{position:relative;overflow:hidden}
+.ripple{position:absolute;border-radius:50%;background:rgba(201,168,76,.25);transform:scale(0);animation:rippleAnim .5s linear;pointer-events:none}
+@keyframes rippleAnim{to{transform:scale(4);opacity:0}}
+
+/* ── AUTO-SCROLL BUTTON ── */
+#scroll-btn{
+  display:none;position:absolute;bottom:90px;right:24px;z-index:20;
+  width:36px;height:36px;border-radius:50%;
+  background:rgba(201,168,76,.15);border:1px solid rgba(201,168,76,.35);
+  color:var(--gold2);cursor:pointer;font-size:16px;
+  align-items:center;justify-content:center;
+  box-shadow:0 4px 20px rgba(0,0,0,.4);
+  animation:fadeUp .2s ease both;
+}
+#scroll-btn.show{display:flex}
+#scroll-btn:hover{background:rgba(201,168,76,.28)}
+
+/* ── IMAGE LIGHTBOX ── */
+#lightbox{display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.92);align-items:center;justify-content:center;cursor:zoom-out}
+#lightbox.open{display:flex}
+#lightbox img{max-width:92vw;max-height:92vh;object-fit:contain;border-radius:4px;box-shadow:0 20px 80px rgba(0,0,0,.8)}
+#lightbox-close{position:absolute;top:20px;right:24px;background:none;border:1px solid rgba(255,255,255,.2);color:#fff;width:36px;height:36px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:50%}
+
+/* ── THEME TOGGLE BUTTON ── */
+#theme-btn{background:none;border:1px solid rgba(201,168,76,.2);color:rgba(201,168,76,.6);width:30px;height:30px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s}
+#theme-btn:hover{border-color:rgba(201,168,76,.5);color:var(--gold2)}
+
+/* ── SMOOTH AUTH→APP TRANSITION ── */
+#app{animation:none}
+#app.entering{animation:appEnter .5s cubic-bezier(.16,1,.3,1) both}
+@keyframes appEnter{from{opacity:0;transform:scale(.98)}to{opacity:1;transform:scale(1)}}
+#auth.exiting{animation:authExit .3s ease forwards}
+@keyframes authExit{to{opacity:0;transform:translateY(-12px)}}
+
+/* ── CONFETTI ── */
+.confetti-piece{position:fixed;width:8px;height:8px;top:-10px;pointer-events:none;z-index:999;border-radius:2px;animation:confettiFall linear forwards}
+@keyframes confettiFall{to{transform:translateY(110vh) rotate(720deg);opacity:0}}
+
+/* ── WELCOME ANIMATED ── */
+.wlc-greeting{font-family:'Cabinet Grotesk',sans-serif;font-size:15px;color:rgba(201,168,76,.6);letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px;animation:fadeUp .6s both}
+
+/* ── MOBILE IMPROVEMENTS ── */
+@media(max-width:600px){
+  .topbar{padding:10px 12px 8px}
+  .topbar-btn span{display:none}
+  .topbar-btn{padding:6px 8px;min-width:32px;justify-content:center}
+  .badge{display:none}
+  .iz{padding:8px 12px 16px}
+  #msgs.chat-mode{padding:16px 12px 8px}
+  .mb2{max-width:88%!important;font-size:14px}
+  .sugg-bar{padding-left:8px}
+  .wlc-greeting{font-size:13px}
+}
+
+/* ── MESSAGE ACTION BAR ── */
+.msg-actions{display:flex;gap:6px;margin-top:10px;opacity:0;transition:opacity .15s}
+.msg.ai:hover .msg-actions,.msg-actions:focus-within{opacity:1}
+.msg-act-btn{display:flex;align-items:center;gap:5px;background:none;border:1px solid rgba(201,168,76,.18);color:rgba(201,168,76,.55);font-family:'Instrument Sans',sans-serif;font-size:11px;padding:4px 10px;cursor:pointer;letter-spacing:.04em;transition:all .12s}
+.msg-act-btn:hover{border-color:rgba(201,168,76,.45);color:var(--gold2);background:rgba(201,168,76,.06)}
+
+/* ── SUGGESTION CHIPS ── */
+.sugg-bar{display:flex;flex-wrap:wrap;gap:8px;padding:4px 0 8px 42px;animation:msgIn .2s ease both}
+.sugg-chip{background:transparent;border:1px solid rgba(201,168,76,.18);color:rgba(240,230,208,.55);padding:7px 14px;font-size:12px;font-family:'Instrument Sans',sans-serif;cursor:pointer;transition:all .12s;letter-spacing:.02em;text-align:left}
+.sugg-chip:hover{border-color:rgba(201,168,76,.5);color:var(--gold2);background:rgba(201,168,76,.06);transform:translateY(-1px)}
 .md-h1{font-family:'Cabinet Grotesk',sans-serif;font-weight:900;font-size:18px;color:var(--gold2);margin:12px 0 6px;border-bottom:1px solid rgba(201,168,76,.15);padding-bottom:4px}
 .md-h2{font-family:'Cabinet Grotesk',sans-serif;font-weight:800;font-size:16px;color:#f0e6d0;margin:10px 0 4px}
 .md-h3{font-family:'Cabinet Grotesk',sans-serif;font-weight:700;font-size:14px;color:var(--gold2);margin:8px 0 3px}
@@ -908,6 +1051,13 @@ button:active:not(:disabled),a:active,.ci:active,.sg:active,.pers-item:active,.n
         <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
         New Chat
       </button>
+      <!-- Search -->
+      <div style="padding:8px 12px 4px">
+        <div style="display:flex;align-items:center;gap:8px;border-bottom:1px solid rgba(201,168,76,.2);padding-bottom:6px">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" style="flex-shrink:0;opacity:.4"><circle cx="11" cy="11" r="8" stroke="#c9a84c" stroke-width="2"/><path d="m21 21-4.35-4.35" stroke="#c9a84c" stroke-width="2" stroke-linecap="round"/></svg>
+          <input id="sb-search" type="text" placeholder="Search chats…" oninput="searchChats(this.value)" style="flex:1;background:none;border:none;outline:none;color:#f0e6d0;font-size:12px;font-family:'Instrument Sans',sans-serif;padding:2px 0">
+        </div>
+      </div>
       <!-- Recent chats -->
       <div class="sb-sec">Chats</div>
       <div id="cl"></div>
@@ -936,6 +1086,15 @@ button:active:not(:disabled),a:active,.ci:active,.sg:active,.pers-item:active,.n
         </div>
         <span class="top-t" id="tt"></span>
         <div class="topbar-actions">
+          <button id="theme-btn" onclick="toggleTheme()" title="Toggle light/dark">🌙</button>
+          <button class="topbar-btn" onclick="exportChat()" title="Export chat as .md">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+            Export
+          </button>
+          <button class="topbar-btn" onclick="toggleFocus()" title="Focus mode (Ctrl+Shift+F)">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+            Focus
+          </button>
           <button class="topbar-btn" id="shareBtn" onclick="shareChat()" title="Share conversation">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>
             Share
@@ -944,9 +1103,12 @@ button:active:not(:disabled),a:active,.ci:active,.sg:active,.pers-item:active,.n
         </div>
       </div>
       <div id="welcome" style="display:none;position:absolute;inset:0;top:57px;bottom:0;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;overflow-y:auto;z-index:5;background:#080705">
-        <div style="display:flex;align-items:center;gap:12px;margin-bottom:32px">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:32px;flex-direction:column">
+          <div class="wlc-greeting" id="wlc-greeting"></div>
+          <div style="display:flex;align-items:center;gap:12px">
           <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMjAwIiB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCI+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImdvbGRHcmFkIiB4MT0iMCUiIHkxPSIwJSIgeDI9IjEwMCUiIHkyPSIxMDAlIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3R5bGU9InN0b3AtY29sb3I6I2U4Yzk2ZSIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjUwJSIgc3R5bGU9InN0b3AtY29sb3I6I2M5YTg0YyIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiM4YTZmMmUiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImdvbGRHcmFkMiIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiNmNWUwOTA7c3RvcC1vcGFjaXR5OjEiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojYjg5MjJhO3N0b3Atb3BhY2l0eToxIi8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPGZpbHRlciBpZD0iZ2xvdyI+CiAgICAgIDxmZUdhdXNzaWFuQmx1ciBzdGREZXZpYXRpb249IjMiIHJlc3VsdD0iYmx1ciIvPgogICAgICA8ZmVDb21wb3NpdGUgaW49IlNvdXJjZUdyYXBoaWMiIGluMj0iYmx1ciIgb3BlcmF0b3I9Im92ZXIiLz4KICAgIDwvZmlsdGVyPgogIDwvZGVmcz4KCiAgPCEtLSBEYXJrIGJhY2tncm91bmQgc3F1YXJlIHdpdGggc2xpZ2h0IGJvcmRlciAtLT4KICA8cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgcng9IjM2IiBmaWxsPSIjMGEwODA1Ii8+CiAgPHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIyMDAiIHJ4PSIzNiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ1cmwoI2dvbGRHcmFkKSIgc3Ryb2tlLXdpZHRoPSIxLjUiIG9wYWNpdHk9IjAuNSIvPgoKICA8IS0tIENvcm5lciBhY2NlbnQgbWFya3MgLS0+CiAgPGxpbmUgeDE9IjE4IiB5MT0iMTgiIHgyPSIzNCIgeTI9IjE4IiBzdHJva2U9IiNjOWE4NGMiIHN0cm9rZS13aWR0aD0iMiIgb3BhY2l0eT0iMC43Ii8+CiAgPGxpbmUgeDE9IjE4IiB5MT0iMTgiIHgyPSIxOCIgeTI9IjM0IiBzdHJva2U9IiNjOWE4NGMiIHN0cm9rZS13aWR0aD0iMiIgb3BhY2l0eT0iMC43Ii8+CiAgPGxpbmUgeDE9IjE4MiIgeTE9IjE4IiB4Mj0iMTY2IiB5Mj0iMTgiIHN0cm9rZT0iI2M5YTg0YyIgc3Ryb2tlLXdpZHRoPSIyIiBvcGFjaXR5PSIwLjciLz4KICA8bGluZSB4MT0iMTgyIiB5MT0iMTgiIHgyPSIxODIiIHkyPSIzNCIgc3Ryb2tlPSIjYzlhODRjIiBzdHJva2Utd2lkdGg9IjIiIG9wYWNpdHk9IjAuNyIvPgogIDxsaW5lIHgxPSIxOCIgeTE9IjE4MiIgeDI9IjM0IiB5Mj0iMTgyIiBzdHJva2U9IiNjOWE4NGMiIHN0cm9rZS13aWR0aD0iMiIgb3BhY2l0eT0iMC43Ii8+CiAgPGxpbmUgeDE9IjE4IiB5MT0iMTgyIiB4Mj0iMTgiIHkyPSIxNjYiIHN0cm9rZT0iI2M5YTg0YyIgc3Ryb2tlLXdpZHRoPSIyIiBvcGFjaXR5PSIwLjciLz4KICA8bGluZSB4MT0iMTgyIiB5MT0iMTgyIiB4Mj0iMTY2IiB5Mj0iMTgyIiBzdHJva2U9IiNjOWE4NGMiIHN0cm9rZS13aWR0aD0iMiIgb3BhY2l0eT0iMC43Ii8+CiAgPGxpbmUgeDE9IjE4MiIgeTE9IjE4MiIgeDI9IjE4MiIgeTI9IjE2NiIgc3Ryb2tlPSIjYzlhODRjIiBzdHJva2Utd2lkdGg9IjIiIG9wYWNpdHk9IjAuNyIvPgoKICA8IS0tIEIgbGV0dGVyZm9ybSAtIGNsZWFuIGdlb21ldHJpYyAtLT4KICA8IS0tIFZlcnRpY2FsIHN0cm9rZSAtLT4KICA8cmVjdCB4PSI1OCIgeT0iNDgiIHdpZHRoPSIxOCIgaGVpZ2h0PSIxMDQiIHJ4PSIyIiBmaWxsPSJ1cmwoI2dvbGRHcmFkMikiLz4KICAKICA8IS0tIFRvcCBib3dsIC0tPgogIDxwYXRoIGQ9Ik03NiA0OCBMMTA4IDQ4IFExMzYgNDggMTM2IDc2IFExMzYgMTAwIDEwOCAxMDAgTDc2IDEwMCBaIiBmaWxsPSJ1cmwoI2dvbGRHcmFkMikiLz4KICA8cGF0aCBkPSJNODIgNTggTDEwNCA1OCBRMTIyIDU4IDEyMiA3NiBRMTIyIDkwIDEwNCA5MCBMODIgOTAgWiIgZmlsbD0iIzBhMDgwNSIvPgogIAogIDwhLS0gQm90dG9tIGJvd2wgLSBzbGlnaHRseSB3aWRlciBmb3IgY2xhc3NpYyBCIHByb3BvcnRpb24gLS0+CiAgPHBhdGggZD0iTTc2IDEwMCBMMTEyIDEwMCBRMTQ0IDEwMCAxNDQgMTI4IFExNDQgMTUyIDExMiAxNTIgTDc2IDE1MiBaIiBmaWxsPSJ1cmwoI2dvbGRHcmFkMikiLz4KICA8cGF0aCBkPSJNODIgMTEwIEwxMDggMTEwIFExMzAgMTEwIDEzMCAxMjggUTEzMCAxNDIgMTA4IDE0MiBMODIgMTQyIFoiIGZpbGw9IiMwYTA4MDUiLz4KCiAgPCEtLSBTdWJ0bGUgZ2xvdyBkb3QgdG9wIHJpZ2h0IC0tPgogIDxjaXJjbGUgY3g9IjE1OCIgY3k9IjQ2IiByPSI0IiBmaWxsPSIjYzlhODRjIiBvcGFjaXR5PSIwLjYiLz4KICA8Y2lyY2xlIGN4PSIxNTgiIGN5PSI0NiIgcj0iOCIgZmlsbD0iI2M5YTg0YyIgb3BhY2l0eT0iMC4xNSIvPgo8L3N2Zz4K" style="width:48px;height:48px;border-radius:10px">
           <span style="font-size:36px;font-weight:900;letter-spacing:-1.5px;color:#e8c96e">blemie</span>
+          </div>
         </div>
         <div style="width:100%;max-width:680px;background:rgba(255,255,255,.04);border:1.5px solid rgba(201,168,76,.22);border-radius:20px;padding:0 16px;display:flex;align-items:center;gap:10px">
           <textarea id="wlc-inp" placeholder="How can I help you today?" rows="1"
@@ -964,6 +1126,7 @@ button:active:not(:disabled),a:active,.ci:active,.sg:active,.pers-item:active,.n
         </div>
       </div>
       <div id="msgs"></div>
+      <button id="scroll-btn" onclick="document.getElementById('msgs').scrollTop=9999" title="Scroll to bottom">↓</button>
       <!-- Attachment preview bar -->
       <div id="att-bar">
         <div class="att-preview-wrap">
@@ -1968,43 +2131,75 @@ async function send(){
       ?[{role:'user',content:Array.isArray(ac)?ac:[{type:'text',text:String(ac)}]}]
       :[{role:'system',content:getSys()},...cleanHist];
 
-    // Fetch
-    let res,data;
+    // ── STREAMING FETCH ──
+    let reply='';
     try{
       const ctrl=new AbortController();
-      const tmo=setTimeout(()=>ctrl.abort(),30000);
-      res=await fetch('https://api.groq.com/openai/v1/chat/completions',{
+      const tmo=setTimeout(()=>ctrl.abort(),60000);
+      const res=await fetch('https://api.groq.com/openai/v1/chat/completions',{
         method:'POST',
         headers:{'Content-Type':'application/json','Authorization':'Bearer '+GK},
-        body:JSON.stringify({model,messages:apiMsgs,max_tokens:2048,temperature}),
+        body:JSON.stringify({model,messages:apiMsgs,max_tokens:2048,temperature,stream:true}),
         signal:ctrl.signal
       });
       clearTimeout(tmo);
-      data=await res.json();
+
+      fadeRemove(te);
+
+      if(!res.ok){
+        const errData=await res.json().catch(()=>({}));
+        addMsg('ai','⚠️ '+(errData?.error?.message||'API error ('+res.status+')'));
+        return;
+      }
+
+      // Create streaming bubble
+      const streamDiv=addMsg('ai','');
+      const streamBub=streamDiv.querySelector('.mb2');
+
+      const reader=res.body.getReader();
+      const decoder=new TextDecoder();
+      let buf='';
+
+      while(true){
+        const{done,value}=await reader.read();
+        if(done)break;
+        buf+=decoder.decode(value,{stream:true});
+        const lines=buf.split('\n');
+        buf=lines.pop();
+        for(const line of lines){
+          if(!line.startsWith('data:'))continue;
+          const d=line.slice(5).trim();
+          if(d==='[DONE]')break;
+          try{
+            const j=JSON.parse(d);
+            const tok=j.choices?.[0]?.delta?.content||'';
+            reply+=tok;
+            // Strip think tags on the fly
+            const display=reply.replace(/<think>[\s\S]*?<\/think>/gi,'').replace(/<think>[\s\S]*/gi,'');
+            streamBub.innerHTML=renderMd(display)+'<span class="stream-cursor">▋</span>';
+            document.getElementById('msgs').scrollTop=9999;
+          }catch{}
+        }
+      }
+
+      // Final render — remove cursor
+      reply=reply.replace(/<think>[\s\S]*?<\/think>/gi,'').trim();
+      streamBub.innerHTML=renderMd(reply);
+
     }catch(fetchErr){
       fadeRemove(te);
       addMsg('ai',fetchErr.name==='AbortError'?'⚠️ Request timed out — try again':'⚠️ Could not reach AI — check your internet connection');
       return;
     }
 
-    fadeRemove(te);
-
-    if(!res.ok){
-      const errMsg=data?.error?.message||'API error ('+res.status+')';
-      addMsg('ai','⚠️ '+errMsg);
-      return;
-    }
-
-    let reply=(data.choices?.[0]?.message?.content||'').replace(/<think>[\s\S]*?<\/think>/gi,'').trim();
-    if(!reply){addMsg('ai','(no response)');return;}
+    if(!reply){return;}
 
     hist.push({role:'assistant',content:reply});
     if(chat){chat.history=hist;saveChat(cid,chat.title,hist);}
 
     // Image gen trigger
-    console.log('[reply]', reply.substring(0,200));
     const imgMatch=reply.match(/\[GENIMAGE:\s*([\s\S]+?)\]/);
-    if(imgMatch){console.log('[genImg]',imgMatch[1].trim());genImg(imgMatch[1].trim());return;}
+    if(imgMatch){genImg(imgMatch[1].trim());return;}
 
     // File trigger
     const fileMatches=[...reply.matchAll(/\[FILE:(.+?)\]([\s\S]*?)\[\/FILE\]/g)];
@@ -2018,10 +2213,32 @@ async function send(){
         a.innerHTML='💾 '+fm[1].trim();
         div.querySelector('.mb2').appendChild(a);
       });
-      return;
     }
 
-    addMsg('ai',reply);
+    // ── Add copy button + action bar to the last AI bubble ──
+    const lastBubble=document.getElementById('msgs').querySelector('.msg.ai:last-child .mb2');
+    if(lastBubble){
+      const bar=document.createElement('div');
+      bar.className='msg-actions';
+      bar.innerHTML=`
+        <button class="msg-act-btn" title="Copy" onclick="copyMsg(this,'${encodeURIComponent(reply)}')">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+          Copy
+        </button>
+        <button class="msg-act-btn" title="Regenerate" onclick="regenLast()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.65 6.35A7.958 7.958 0 0 0 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0 1 12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+          Retry
+        </button>`;
+      lastBubble.appendChild(bar);
+    }
+
+    // ── Smart follow-up suggestions ──
+    addSuggestions(reply);
+
+    // ── Auto-title chat after first exchange ──
+    if(chat && chat.title==='New Chat'){
+      autoTitle(disp, reply, chat);
+    }
 
   }catch(outerErr){
     console.error('[blemie] send() error:',outerErr);
@@ -2033,8 +2250,21 @@ async function send(){
   }
 }
 
-// ── IMAGE GENERATION ──
-function addMsg(role,text,imgData){
+// ── MARKDOWN RENDERER ──
+function renderMd(text){
+  return text
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/```(\w*)\n?([\s\S]*?)```/g,(_,lang,code)=>`<pre class="code-block-fancy"><div class="code-lang">${lang||'code'}</div><code>${code.trim()}</code></pre>`)
+    .replace(/`([^`]+)`/g,'<code style="background:rgba(201,168,76,.08);padding:1px 5px;font-family:monospace;font-size:13px">$1</code>')
+    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g,'<em>$1</em>')
+    .replace(/^#{1,3}\s(.+)$/gm,'<div style="font-family:\'Cabinet Grotesk\',sans-serif;font-weight:800;font-size:15px;color:#f0e6d0;margin:8px 0 4px">$1</div>')
+    .replace(/^[-•]\s(.+)$/gm,'<div style="padding-left:14px;position:relative;margin:2px 0"><span style="position:absolute;left:4px;color:var(--gold);opacity:.7">·</span>$1</div>')
+    .replace(/\n/g,'<br>');
+}
+
+// ── ADD MESSAGE ──
+function addMsg(role,text){
   const m=document.getElementById('msgs');
   const d=document.createElement('div');
   d.className='msg '+(role==='ai'?'ai':'user');
@@ -2046,71 +2276,185 @@ function addMsg(role,text,imgData){
     av.innerHTML=img?`<img src="${img}" style="width:100%;height:100%;object-fit:cover">`:'<span style="font-size:12px">👤</span>';
   }
   const b=document.createElement('div');b.className='mb2';
-  // Render markdown-lite
-  const html=text
-    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-    .replace(/```([\s\S]*?)```/g,'<pre style="background:rgba(201,168,76,.06);border:1px solid rgba(201,168,76,.15);padding:12px;overflow-x:auto;font-family:monospace;font-size:13px;margin:8px 0;white-space:pre-wrap">$1</pre>')
-    .replace(/`([^`]+)`/g,'<code style="background:rgba(201,168,76,.08);padding:1px 5px;font-family:monospace;font-size:13px">$1</code>')
-    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
-    .replace(/\*(.+?)\*/g,'<em>$1</em>')
-    .replace(/^#{1,3}\s(.+)$/gm,'<div style="font-family:\'Cabinet Grotesk\',sans-serif;font-weight:800;font-size:15px;color:#f0e6d0;margin:8px 0 4px">$1</div>')
-    .replace(/^[-•]\s(.+)$/gm,'<div style="padding-left:14px;position:relative;margin:2px 0"><span style="position:absolute;left:4px;color:var(--gold);opacity:.7">·</span>$1</div>')
-    .replace(/\n/g,'<br>');
-  b.innerHTML=html;
+  b.innerHTML=renderMd(text);
+  // Add reaction bar to AI messages
+  if(role==='ai'&&text){
+    const rb=document.createElement('div');
+    rb.className='react-bar';
+    ['👍','❤️','🔥','😂'].forEach(em=>{
+      const btn=document.createElement('button');
+      btn.className='react-btn';btn.textContent=em;
+      btn.onclick=()=>addReaction(btn,em,b);
+      rb.appendChild(btn);
+    });
+    b.appendChild(rb);
+  }
   d.appendChild(av);d.appendChild(b);m.appendChild(d);m.scrollTop=9999;return d;
+}
+
+// ── COPY MESSAGE ──
+function copyMsg(btn,encoded){
+  const text=decodeURIComponent(encoded);
+  navigator.clipboard.writeText(text).then(()=>{
+    const orig=btn.innerHTML;
+    btn.innerHTML='<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg> Copied!';
+    btn.style.color='#4ade80';
+    setTimeout(()=>{btn.innerHTML=orig;btn.style.color='';},2000);
+  });
+}
+
+// ── REGENERATE LAST ──
+function regenLast(){
+  if(busy||hist.length<2)return;
+  // Remove last assistant message
+  hist.pop();
+  // Remove last AI bubble and suggestions from DOM
+  const msgs=document.getElementById('msgs');
+  const sugg=msgs.querySelector('.sugg-bar');if(sugg)sugg.remove();
+  const lastAi=msgs.querySelector('.msg.ai:last-child');if(lastAi)lastAi.remove();
+  // Re-send
+  const lastUser=hist[hist.length-1];
+  if(!lastUser)return;
+  document.getElementById('ui').value=typeof lastUser.content==='string'?lastUser.content:'';
+  hist.pop();
+  send();
+}
+
+// ── SMART SUGGESTIONS ──
+async function addSuggestions(reply){
+  // Ask AI for 3 follow-up questions based on the reply
+  try{
+    const res=await fetch('https://api.groq.com/openai/v1/chat/completions',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+GK},
+      body:JSON.stringify({
+        model:'llama-3.1-8b-instant',
+        max_tokens:120,
+        temperature:0.8,
+        messages:[{role:'user',content:`Based on this AI response, give exactly 3 short follow-up questions the user might want to ask next. Return ONLY a JSON array of 3 strings, nothing else.\n\nAI response:\n${reply.slice(0,400)}`}]
+      })
+    });
+    const data=await res.json();
+    let raw=(data.choices?.[0]?.message?.content||'').trim();
+    // Strip markdown fences if present
+    raw=raw.replace(/```json|```/g,'').trim();
+    const suggestions=JSON.parse(raw);
+    if(!Array.isArray(suggestions)||suggestions.length===0)return;
+
+    const msgs=document.getElementById('msgs');
+    // Remove old suggestions
+    const old=msgs.querySelector('.sugg-bar');if(old)old.remove();
+
+    const bar=document.createElement('div');
+    bar.className='sugg-bar';
+    bar.innerHTML=suggestions.slice(0,3).map(s=>`<button class="sugg-chip" onclick="qs(this.textContent)">${s}</button>`).join('');
+    msgs.appendChild(bar);
+    msgs.scrollTop=9999;
+  }catch(e){/* silently fail */}
+}
+
+// ── AUTO-TITLE ──
+async function autoTitle(userMsg,aiReply,chat){
+  try{
+    const res=await fetch('https://api.groq.com/openai/v1/chat/completions',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+GK},
+      body:JSON.stringify({
+        model:'llama-3.1-8b-instant',
+        max_tokens:20,
+        temperature:0.5,
+        messages:[{role:'user',content:`Give a short 4-6 word title for this conversation. Return ONLY the title, no quotes, no punctuation at end.\n\nUser: ${userMsg.slice(0,200)}\nAI: ${aiReply.slice(0,200)}`}]
+      })
+    });
+    const data=await res.json();
+    const title=(data.choices?.[0]?.message?.content||'').trim().replace(/^["']|["']$/g,'').slice(0,60);
+    if(!title)return;
+    chat.title=title;
+    document.getElementById('tt').textContent=title;
+    renderCL();
+    saveChat(chat.id,title,hist);
+  }catch(e){/* silently fail */}
 }
 
 // ── IMAGE GENERATION ──
 function genImg(prompt){
   const seed=Math.floor(Math.random()*99999);
-  const directUrl='https://image.pollinations.ai/prompt/'+encodeURIComponent(prompt)+'?seed='+seed+'&nologo=true&width=1024&height=1024';
+  // Use the /prompt/ endpoint — works as a plain <img> tag via crossOrigin
+  const directUrl='https://image.pollinations.ai/prompt/'+encodeURIComponent(prompt)+'?seed='+seed+'&nologo=true&width=1024&height=1024&enhance=true';
 
   const msgs=document.getElementById('msgs');
   const bubble=document.createElement('div');
   bubble.className='msg ai';
   const lid='ig'+Date.now();
-  bubble.innerHTML='<div class="mav"><span style="font-size:11px;font-weight:900;color:var(--gold2)">B</span></div>'
-    +'<div class="mb2" id="'+lid+'">🎨 Generating image... <span style="color:var(--tx2);font-size:12px">(may take 30–60s)</span></div>';
+
+  // Animated generating indicator
+  bubble.innerHTML=`<div class="mav"><span style="font-size:11px;font-weight:900;color:var(--gold2)">B</span></div>
+    <div class="mb2" id="${lid}">
+      <div style="display:flex;align-items:center;gap:10px;color:rgba(201,168,76,.6);font-size:13px">
+        <span style="width:18px;height:18px;border:2px solid rgba(201,168,76,.3);border-top-color:var(--gold);border-radius:50%;display:inline-block;animation:spin .8s linear infinite;flex-shrink:0"></span>
+        Generating image…
+      </div>
+      <div style="margin-top:8px;width:100%;max-width:400px;height:280px;background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.1);border-radius:8px;overflow:hidden;position:relative">
+        <div style="position:absolute;inset:0;background:linear-gradient(90deg,transparent 0%,rgba(201,168,76,.06) 50%,transparent 100%);animation:shimmer 1.6s infinite"></div>
+      </div>
+    </div>`;
   msgs.appendChild(bubble);
   msgs.scrollTop=9999;
 
-  const controller=new AbortController();
-  const timeout=setTimeout(()=>controller.abort(),120000);
+  // Use Image() tag — Pollinations supports cross-origin image loads
+  // We give it a generous timeout since generation can take 30–90s
+  const img=new Image();
+  img.crossOrigin='anonymous';
 
-  fetch(directUrl,{signal:controller.signal})
-    .then(function(res){
-      clearTimeout(timeout);
-      if(!res.ok)throw new Error('HTTP '+res.status);
-      return res.blob();
-    })
-    .then(function(blob){
-      if(blob.size<500)throw new Error('Image too small — generation failed');
-      const blobUrl=URL.createObjectURL(blob);
-      const el2=document.getElementById(lid);
-      if(!el2)return;
-      const img=document.createElement('img');
-      img.src=blobUrl;
-      img.style.cssText='max-width:100%;border-radius:12px;display:block;box-shadow:0 8px 40px rgba(0,0,0,.5);margin-top:8px;cursor:pointer';
-      img.onclick=function(){window.open(directUrl,'_blank');};
-      el2.innerHTML='';
-      el2.appendChild(img);
-      const acts=document.createElement('div');
-      acts.style.cssText='display:flex;gap:8px;margin-top:10px;flex-wrap:wrap';
-      const a1=document.createElement('a');a1.href=directUrl;a1.target='_blank';a1.className='dl';a1.textContent='🔗 Full size';
-      const rb=document.createElement('button');
-      rb.style.cssText='border:1px solid rgba(201,168,76,.3);background:none;color:var(--gold2);font-size:12px;cursor:pointer;padding:5px 12px;font-family:inherit';
-      rb.textContent='🔄 Regenerate';
-      rb.onclick=function(){genImg(prompt);};
-      acts.appendChild(a1);acts.appendChild(rb);
-      el2.appendChild(acts);
-      msgs.scrollTop=9999;
-    })
-    .catch(function(err){
-      clearTimeout(timeout);
-      console.log('[genImg] fetch error:',err);
-      const el2=document.getElementById(lid);
-      if(el2)el2.innerHTML='⚠️ Generation failed — <a href="'+directUrl+'" target="_blank" style="color:var(--gold2)">try opening directly ↗</a>';
-    });
+  const timeout=setTimeout(()=>{
+    img.src='';
+    const el=document.getElementById(lid);
+    if(el)el.innerHTML=`⚠️ Timed out — <a href="${directUrl}" target="_blank" style="color:var(--gold2)">open directly ↗</a>`;
+  },120000);
+
+  img.onload=function(){
+    clearTimeout(timeout);
+    // Check it's a real image not an error placeholder
+    if(img.naturalWidth<50){
+      const el=document.getElementById(lid);
+      if(el)el.innerHTML=`⚠️ Generation failed — <a href="${directUrl}" target="_blank" style="color:var(--gold2)">open directly ↗</a>`;
+      return;
+    }
+    const el2=document.getElementById(lid);
+    if(!el2)return;
+    img.style.cssText='max-width:100%;border-radius:12px;display:block;box-shadow:0 8px 40px rgba(0,0,0,.6);margin-top:4px;cursor:zoom-in;border:1px solid rgba(201,168,76,.15)';
+    img.onclick=()=>window.open(directUrl,'_blank');
+    el2.innerHTML='';
+    el2.appendChild(img);
+    const acts=document.createElement('div');
+    acts.style.cssText='display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;align-items:center';
+    const a1=document.createElement('a');
+    a1.href=directUrl;a1.target='_blank';a1.className='dl';a1.textContent='🔗 Full size';
+    const rb=document.createElement('button');
+    rb.style.cssText='border:1px solid rgba(201,168,76,.3);background:none;color:var(--gold2);font-size:12px;cursor:pointer;padding:5px 14px;font-family:inherit;letter-spacing:.04em';
+    rb.textContent='🔄 Regenerate';
+    rb.onclick=()=>genImg(prompt);
+    // Download button
+    const dl=document.createElement('button');
+    dl.style.cssText='border:1px solid rgba(201,168,76,.3);background:none;color:var(--gold2);font-size:12px;cursor:pointer;padding:5px 14px;font-family:inherit;letter-spacing:.04em';
+    dl.textContent='⬇ Save';
+    dl.onclick=()=>{
+      const a=document.createElement('a');a.href=directUrl;
+      a.download='blemie-image.jpg';a.click();
+    };
+    acts.appendChild(a1);acts.appendChild(rb);acts.appendChild(dl);
+    el2.appendChild(acts);
+    msgs.scrollTop=9999;
+  };
+
+  img.onerror=function(){
+    clearTimeout(timeout);
+    const el2=document.getElementById(lid);
+    if(el2)el2.innerHTML=`⚠️ Generation failed — <a href="${directUrl}" target="_blank" style="color:var(--gold2)">try opening directly ↗</a><br><small style="color:rgba(201,168,76,.4);font-size:11px">Tip: Pollinations may be rate-limited, try again in a moment</small>`;
+  };
+
+  // Set src AFTER attaching handlers
+  img.src=directUrl;
 }
 
 
@@ -3177,6 +3521,331 @@ function addTyping(){
   // start after short delay
   setTimeout(revealNext,800);
 })();
+// ── DRAG & DROP ──
+(function initDragDrop(){
+  const overlay=document.getElementById('drop-overlay');
+  let dragCounter=0;
+  document.addEventListener('dragenter',e=>{
+    if(!document.getElementById('app').style.display||document.getElementById('app').style.display==='none')return;
+    e.preventDefault();dragCounter++;
+    overlay.classList.add('active');
+  });
+  document.addEventListener('dragleave',e=>{
+    dragCounter--;
+    if(dragCounter<=0){dragCounter=0;overlay.classList.remove('active');}
+  });
+  document.addEventListener('dragover',e=>e.preventDefault());
+  document.addEventListener('drop',e=>{
+    e.preventDefault();dragCounter=0;overlay.classList.remove('active');
+    const file=e.dataTransfer?.files?.[0];
+    if(!file)return;
+    // Re-use existing fup logic by creating a fake event
+    const dt=new DataTransfer();dt.items.add(file);
+    const inp=document.getElementById('fi');
+    inp.files=dt.files;
+    inp.dispatchEvent(new Event('change'));
+    showToast('📎 '+file.name+' attached','info');
+  });
+})();
+
+// ── NETWORK STATUS ──
+window.addEventListener('offline',()=>showToast('⚡ You\'re offline — messages won\'t send','offline',0));
+window.addEventListener('online',()=>showToast('✅ Back online!','online'));
+
+function showToast(msg,type='info',duration=3500){
+  const c=document.getElementById('toast-container');
+  const t=document.createElement('div');
+  t.className='toast '+(type||'');
+  t.textContent=msg;
+  c.appendChild(t);
+  if(duration>0){
+    setTimeout(()=>{
+      t.style.animation='toastIn .25s reverse forwards';
+      setTimeout(()=>t.remove(),250);
+    },duration);
+  }
+}
+
+// ── REACTIONS ──
+function addReaction(btn,emoji,msgEl){
+  // Find or create badges container
+  let badges=msgEl.querySelector('.reaction-badges');
+  if(!badges){badges=document.createElement('div');badges.className='reaction-badges';msgEl.appendChild(badges);}
+  // Toggle existing badge
+  const existing=[...badges.querySelectorAll('.reaction-badge')].find(b=>b.dataset.emoji===emoji);
+  if(existing){
+    const count=parseInt(existing.dataset.count||1);
+    if(existing.classList.contains('mine')){
+      if(count<=1)existing.remove();
+      else{existing.dataset.count=count-1;existing.querySelector('.rcount').textContent=count-1;}
+      existing.classList.remove('mine');
+    }else{
+      existing.dataset.count=count+1;existing.querySelector('.rcount').textContent=count+1;
+      existing.classList.add('mine');
+    }
+    return;
+  }
+  const badge=document.createElement('div');
+  badge.className='reaction-badge mine';
+  badge.dataset.emoji=emoji;badge.dataset.count=1;
+  badge.innerHTML=`${emoji} <span class="rcount">1</span>`;
+  badge.onclick=()=>addReaction(null,emoji,msgEl);
+  badges.appendChild(badge);
+}
+
+// ── EXPORT CHAT ──
+function exportChat(){
+  if(!hist.length){showToast('No conversation to export yet','info');return;}
+  const chat=chats.find(x=>x.id===cid);
+  const title=chat?.title||'blemie-chat';
+  const lines=['# '+title,'','---',''];
+  hist.forEach(m=>{
+    const role=m.role==='user'?'**You**':'**Blemie**';
+    const content=typeof m.content==='string'?m.content:(m.content?.[0]?.text||'[file]');
+    lines.push(role+': '+content,'');
+  });
+  lines.push('---','*Exported from blemie — your AI bestie*');
+  const blob=new Blob([lines.join('\n')],{type:'text/markdown'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=title.replace(/[^a-z0-9]/gi,'-').toLowerCase()+'.md';
+  a.click();
+  showToast('💾 Chat exported as .md','info');
+}
+
+// ── FOCUS MODE ──
+function toggleFocus(){
+  document.body.classList.toggle('focus-mode');
+  showToast(document.body.classList.contains('focus-mode')?'🎯 Focus mode on — press Esc to exit':'Focus mode off','info');
+}
+
+// ── KEYBOARD SHORTCUTS ──
+function openKbModal(){document.getElementById('kb-modal').classList.add('open');}
+function closeKbModal(){document.getElementById('kb-modal').classList.remove('open');}
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){
+    closeKbModal();closeLightbox();
+    if(document.body.classList.contains('focus-mode'))document.body.classList.remove('focus-mode');
+    document.getElementById('pers-modal').style.display='none';
+    document.getElementById('share-modal').style.display='none';
+    return;
+  }
+  if(e.key==='?'&&!e.ctrlKey&&!e.metaKey&&document.activeElement.tagName!=='TEXTAREA'&&document.activeElement.tagName!=='INPUT'){openKbModal();return;}
+  if((e.ctrlKey||e.metaKey)&&e.key==='k'){e.preventDefault();newChat();return;}
+  if((e.ctrlKey||e.metaKey)&&e.key==='/'){e.preventDefault();document.getElementById('ui')?.focus();return;}
+  if((e.ctrlKey||e.metaKey)&&e.key==='e'){e.preventDefault();exportChat();return;}
+  if((e.ctrlKey||e.metaKey)&&e.shiftKey&&e.key==='F'){e.preventDefault();toggleFocus();return;}
+});
+
+// ── THEME TOGGLE ──
+let isDark=true;
+function toggleTheme(){
+  isDark=!isDark;
+  document.body.classList.toggle('light',!isDark);
+  document.getElementById('theme-btn').textContent=isDark?'🌙':'☀️';
+  localStorage.setItem('blemie_theme_mode',isDark?'dark':'light');
+}
+(function(){
+  const saved=localStorage.getItem('blemie_theme_mode');
+  if(saved==='light'){isDark=false;document.body.classList.add('light');const tb=document.getElementById('theme-btn');if(tb)tb.textContent='☀️';}
+})();
+
+// ── WELCOME GREETING ──
+function setGreeting(){
+  const h=new Date().getHours();
+  const g=document.getElementById('wlc-greeting');if(!g)return;
+  if(h>=5&&h<12)g.textContent='Good morning ☀️';
+  else if(h>=12&&h<17)g.textContent='Good afternoon 🌤️';
+  else if(h>=17&&h<21)g.textContent='Good evening 🌆';
+  else g.textContent='Hey night owl 🌙';
+}
+setTimeout(setGreeting,300);
+
+// ── GLOWING INPUT ──
+setTimeout(()=>{
+  const ui=document.getElementById('ui');
+  const box=ui?.closest('.grok-input-box');
+  if(!ui||!box)return;
+  ui.addEventListener('input',()=>box.classList.toggle('typing',ui.value.length>0));
+  ui.addEventListener('focus',()=>box.classList.add('typing'));
+  ui.addEventListener('blur',()=>{if(!ui.value)box.classList.remove('typing');});
+},500);
+
+// ── SEND CHIME ──
+function playChime(){
+  try{
+    const ctx=new(window.AudioContext||window.webkitAudioContext)();
+    const o=ctx.createOscillator(),g=ctx.createGain();
+    o.connect(g);g.connect(ctx.destination);
+    o.type='sine';o.frequency.setValueAtTime(880,ctx.currentTime);
+    o.frequency.exponentialRampToValueAtTime(1200,ctx.currentTime+0.08);
+    g.gain.setValueAtTime(0.1,ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.28);
+    o.start();o.stop(ctx.currentTime+0.28);
+  }catch(e){}
+}
+
+// ── VOICE OUTPUT ──
+let currentUtterance=null;
+function speakMsg(text,btn){
+  if(!window.speechSynthesis)return showToast('Voice not supported in this browser','info');
+  if(currentUtterance){window.speechSynthesis.cancel();currentUtterance=null;if(btn){btn.textContent='🔊 Read';btn.style.color='';}return;}
+  const clean=text.replace(/<[^>]+>/g,'').replace(/[*_`#]/g,'').trim();
+  const utt=new SpeechSynthesisUtterance(clean);
+  utt.rate=1.05;utt.pitch=1;
+  utt.onend=()=>{currentUtterance=null;if(btn){btn.textContent='🔊 Read';btn.style.color='';}};
+  currentUtterance=utt;
+  if(btn){btn.textContent='⏹ Stop';btn.style.color='var(--gold2)';}
+  window.speechSynthesis.speak(utt);
+}
+
+// ── CONFETTI ──
+function launchConfetti(){
+  const colors=['#c9a84c','#e8c96e','#fff7d6','#f0c040','#8a6f2e','#ffffff'];
+  for(let i=0;i<56;i++){
+    const el=document.createElement('div');el.className='confetti-piece';
+    el.style.cssText=`left:${20+Math.random()*60}vw;background:${colors[i%colors.length]};width:${5+Math.random()*7}px;height:${5+Math.random()*7}px;animation-duration:${1+Math.random()*1.4}s;animation-delay:${Math.random()*0.5}s`;
+    document.body.appendChild(el);setTimeout(()=>el.remove(),3000);
+  }
+}
+
+// ── TAB TITLE TYPING INDICATOR ──
+let _titleInt=null;
+function setTypingTitle(){
+  let d=0;_titleInt=setInterval(()=>{document.title='blemie is typing'+'...'.slice(0,d++%4);},450);
+}
+function clearTypingTitle(){if(_titleInt){clearInterval(_titleInt);_titleInt=null;}document.title='blemie — your AI bestie';}
+
+// ── TIMESTAMPS ──
+function timeAgo(ts){
+  const s=Math.floor((Date.now()-ts)/1000);
+  if(s<15)return 'just now';if(s<60)return s+'s ago';
+  const m=Math.floor(s/60);if(m<60)return m+'m ago';
+  const hr=Math.floor(m/60);if(hr<24)return hr+'h ago';
+  return new Date(ts).toLocaleDateString();
+}
+
+// ── SCROLL TO BOTTOM BUTTON ──
+setTimeout(()=>{
+  const msgs=document.getElementById('msgs');
+  const btn=document.getElementById('scroll-btn');
+  if(!msgs||!btn)return;
+  msgs.addEventListener('scroll',()=>{
+    const away=msgs.scrollHeight-msgs.scrollTop-msgs.clientHeight;
+    btn.classList.toggle('show',away>200&&msgs.scrollHeight>msgs.clientHeight+300);
+  });
+},600);
+
+// ── LIGHTBOX ──
+function openLightbox(src){
+  const lb=document.getElementById('lightbox');
+  document.getElementById('lightbox-img').src=src;
+  lb.classList.add('open');document.body.style.overflow='hidden';
+}
+function closeLightbox(){
+  const lb=document.getElementById('lightbox');
+  if(lb)lb.classList.remove('open');
+  document.body.style.overflow='';
+}
+
+// ── RIPPLE ON BUTTONS ──
+document.addEventListener('click',e=>{
+  const btn=e.target.closest('button');if(!btn)return;
+  const r=document.createElement('span');r.className='ripple';
+  const rect=btn.getBoundingClientRect();
+  const size=Math.max(rect.width,rect.height);
+  r.style.cssText=`width:${size}px;height:${size}px;left:${e.clientX-rect.left-size/2}px;top:${e.clientY-rect.top-size/2}px`;
+  btn.style.position='relative';btn.style.overflow='hidden';
+  btn.appendChild(r);setTimeout(()=>r.remove(),500);
+});
+
+// ── CHAT SEARCH ──
+function searchChats(q){
+  const e=document.getElementById('cl');if(!e)return;
+  const filtered=q?chats.filter(c=>
+    c.title.toLowerCase().includes(q.toLowerCase())||
+    (c.history||[]).some(m=>(typeof m.content==='string'?m.content:'').toLowerCase().includes(q.toLowerCase()))
+  ):chats;
+  if(!filtered.length){e.innerHTML='<div style="padding:12px 16px;font-size:12px;color:rgba(201,168,76,.3)">No chats found</div>';return;}
+  e.innerHTML=filtered.map(ch=>`<div class="ci ${ch.id===cid?'on':''}" onclick="loadChat('${ch.id}')"><div class="ci-info"><div class="ci-t">${ch.title||'New Chat'}</div><div class="ci-d">${new Date(ch.created_at).toLocaleDateString()}</div></div><button class="ci-del" onclick="delChat('${ch.id}',event)">🗑️</button></div>`).join('');
+}
+
+// ── PATCH addMsg FOR TIMESTAMPS + VOICE + LIGHTBOX ──
+const __origAddMsg=addMsg;
+addMsg=function(role,text){
+  const d=__origAddMsg(role,text);if(!d)return d;
+  // Timestamp
+  const ts=document.createElement('div');ts.className='msg-time';ts.textContent=timeAgo(Date.now());
+  d.querySelector('.mb2').appendChild(ts);
+  // Voice button on AI messages
+  if(role==='ai'&&text){
+    const vb=document.createElement('button');
+    vb.className='msg-act-btn';vb.innerHTML='🔊 Read';
+    const plain=text.replace(/<[^>]+>/g,'').replace(/[*_`#]/g,'').trim();
+    vb.onclick=()=>speakMsg(plain,vb);
+    const acts=d.querySelector('.msg-actions');if(acts)acts.appendChild(vb);
+  }
+  // Lightbox on images
+  setTimeout(()=>{d.querySelectorAll('img').forEach(img=>{img.style.cursor='zoom-in';img.onclick=()=>openLightbox(img.src);});},200);
+  return d;
+};
+
+// ── PATCH send() FOR CHIME + TAB TITLE ──
+const __origSend=send;
+send=async function(){
+  playChime();setTypingTitle();
+  try{await __origSend();}finally{clearTypingTitle();}
+};
+
+// ── PATCH newChat() FOR CONFETTI ──
+const __origNewChat=newChat;
+newChat=async function(){
+  launchConfetti();return __origNewChat();
+};
+
+// ── PATCH showWlc() FOR GREETING ──
+const __origShowWlc=showWlc;
+showWlc=function(){
+  __origShowWlc();setTimeout(setGreeting,100);
+};
 </script>
+
+<!-- LIGHTBOX -->
+<div id="lightbox" onclick="closeLightbox()">
+  <button id="lightbox-close" onclick="closeLightbox()">✕</button>
+  <img id="lightbox-img" src="" alt="">
+</div>
+
+<!-- DRAG DROP OVERLAY -->
+<div id="drop-overlay">
+  <div class="drop-icon">📎</div>
+  <div class="drop-txt">Drop your file here</div>
+  <div class="drop-sub">Any file type supported</div>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div id="toast-container"></div>
+
+<!-- FOCUS EXIT BUTTON -->
+<button id="focus-exit" onclick="toggleFocus()" title="Exit focus mode">✕</button>
+
+<!-- KEYBOARD SHORTCUTS MODAL -->
+<div id="kb-modal" onclick="if(event.target===this)closeKbModal()">
+  <div class="kb-box">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+      <div class="kb-title">Keyboard Shortcuts</div>
+      <button onclick="closeKbModal()" style="background:none;border:1px solid rgba(201,168,76,.2);color:rgba(240,230,208,.4);width:28px;height:28px;cursor:pointer;font-size:13px">✕</button>
+    </div>
+    <div class="kb-row"><span>New chat</span><span><span class="key">Ctrl</span><span class="key">K</span></span></div>
+    <div class="kb-row"><span>Focus input</span><span><span class="key">Ctrl</span><span class="key">/</span></span></div>
+    <div class="kb-row"><span>Export chat</span><span><span class="key">Ctrl</span><span class="key">E</span></span></div>
+    <div class="kb-row"><span>Focus mode</span><span><span class="key">Ctrl</span><span class="key">Shift</span><span class="key">F</span></span></div>
+    <div class="kb-row"><span>Close modal / Exit focus</span><span><span class="key">Esc</span></span></div>
+    <div class="kb-row"><span>Show shortcuts</span><span><span class="key">?</span></span></div>
+    <div style="margin-top:16px;font-size:11px;color:rgba(201,168,76,.3);text-align:center;letter-spacing:.06em">DRAG ANY FILE onto the chat to attach it</div>
+  </div>
+</div>
+
 </body>
 </html>
