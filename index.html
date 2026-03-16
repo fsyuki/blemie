@@ -878,8 +878,8 @@ body::before{content:'';position:fixed;inset:0;background:
 .pers-desc{font-size:11px;color:rgba(240,230,208,.35);line-height:1.4}
 
 /* Custom cursor */
-#cursor-dot{position:fixed;width:7px;height:7px;background:var(--gold2);border-radius:50%;pointer-events:none;z-index:9999;left:0;top:0;box-shadow:0 0 10px rgba(201,168,76,.9),0 0 20px rgba(201,168,76,.4);transition:opacity .2s;will-change:transform}
-#cursor-ring{position:fixed;width:32px;height:32px;border:1.5px solid rgba(201,168,76,.45);border-radius:50%;pointer-events:none;z-index:9998;left:0;top:0;transition:width .12s ease,height .12s ease,border-color .12s ease,opacity .2s;will-change:transform}
+#cursor-dot{position:fixed;width:7px;height:7px;background:var(--gold2);border-radius:50%;pointer-events:none;z-index:9999;left:-50px;top:-50px;box-shadow:0 0 10px rgba(201,168,76,.9),0 0 20px rgba(201,168,76,.4);transition:opacity .2s;will-change:transform}
+#cursor-ring{position:fixed;width:32px;height:32px;border:1.5px solid rgba(201,168,76,.45);border-radius:50%;pointer-events:none;z-index:9998;left:-50px;top:-50px;transition:width .12s ease,height .12s ease,border-color .12s ease,opacity .2s;will-change:transform}
 
 /* Image gen status */
 .img-gen-wrap{display:flex;flex-direction:column;gap:8px}
@@ -1430,14 +1430,23 @@ button:active:not(:disabled),a:active,.ci:active,.sg:active,.pers-item:active,.n
 <input type="file" id="fi" accept="*/*" onchange="fup(event)">
 
 <script>
+// ── BAIL TIMER: runs first, before anything can fail ──
+const _bail=setTimeout(function(){
+  var l=document.getElementById('loading');if(l)l.style.display='none';
+  var a=document.getElementById('auth');if(a)a.style.display='flex';
+},1500);
+
 const SURL='https://ufyngztqwgrdfakubbqh.supabase.co';
 const SKEY='sb_publishable_UqIXsop7OG0LclJJzWGoSQ_5s8ze8fB';
 const GK='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';
-const sb=supabase.createClient(SURL,SKEY);
+var sb;
+try{ sb=supabase.createClient(SURL,SKEY); }
+catch(e){ console.error('Supabase init failed',e); sb=null; }
 let busy=false,att=null,shown=window.innerWidth>=700,chats=[],cid=null,hist=[],cu=null,am='login';
 
 // Init — always hide loading, even on error
 const hideLoading=()=>{
+  clearTimeout(_bail);
   const l=document.getElementById('loading');
   if(l)l.style.display='none';
 };
@@ -3191,9 +3200,8 @@ function addTyping(){
   }
   setInterval(spawnMeteor,1800+Math.random()*2000);
 
-  }
 
-  let mx=window.innerWidth/2,my=window.innerHeight/2;
+  let mx=-50,my=-50;
   const dot=document.getElementById('cursor-dot');
   const ring=document.getElementById('cursor-ring');
   document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;if(dot)dot.style.opacity='1';if(ring)ring.style.opacity='1';});
