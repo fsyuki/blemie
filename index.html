@@ -28,7 +28,7 @@ button,a,.ci,.topbar-btn,.gib,.nc-btn{transition:opacity .12s ease,border-color 
   --gold-dim:rgba(201,168,76,0.2);
 }
 html,body{height:100%;background:var(--bg);color:var(--tx);font-family:'Instrument Sans',sans-serif;font-size:15px;line-height:1.6;overflow:hidden}
-@media(pointer:fine){*{cursor:none!important}#cursor-dot,#cursor-ring{display:block}}
+@media(pointer:fine){*{cursor:none!important}#cursor-dot,#cursor-ring{position:fixed;width:32px;height:32px;border:1.5px solid rgba(201,168,76,.45);border-radius:50%;pointer-events:none;z-index:9998;left:0;top:0;will-change:transform}}
 @media(pointer:coarse){#cursor-dot,#cursor-ring{display:none}}
 
 
@@ -878,7 +878,7 @@ body::before{content:'';position:fixed;inset:0;background:
 .pers-desc{font-size:11px;color:rgba(240,230,208,.35);line-height:1.4}
 
 /* Custom cursor */
-#cursor-dot{position:fixed;width:7px;height:7px;background:var(--gold2);border-radius:50%;pointer-events:none;z-index:9999;left:0;top:0;visibility:hidden;box-shadow:0 0 10px rgba(201,168,76,.9),0 0 20px rgba(201,168,76,.4);transition:opacity .2s;will-change:transform}
+#cursor-dot{position:fixed;width:7px;height:7px;background:var(--gold2);border-radius:50%;pointer-events:none;z-index:9999;left:0;top:0;box-shadow:0 0 10px rgba(201,168,76,.9),0 0 20px rgba(201,168,76,.4);will-change:transform}
 #cursor-ring{position:fixed;width:32px;height:32px;border:1.5px solid rgba(201,168,76,.45);border-radius:50%;pointer-events:none;z-index:9998;left:0;top:0;transition:width .12s ease,height .12s ease,border-color .12s ease,opacity .2s;will-change:transform}
 
 /* Image gen status */
@@ -1095,10 +1095,7 @@ button:active:not(:disabled),a:active,.ci:active,.sg:active,.pers-item:active,.n
         </div>
         <span class="top-t" id="tt"></span>
         <div class="topbar-actions">
-          <button class="topbar-btn" onclick="exportChat()" title="Export chat as .md">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
-            Export
-          </button>
+          
           <button class="topbar-btn" onclick="toggleFocus()" title="Focus mode (Ctrl+Shift+F)">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
             Focus
@@ -1224,6 +1221,7 @@ button:active:not(:disabled),a:active,.ci:active,.sg:active,.pers-item:active,.n
       <button onclick="copyFullConvo()" style="flex:1;background:rgba(201,168,76,.06);border:1px solid rgba(201,168,76,.18);color:rgba(240,230,208,.6);padding:9px;font-family:'Instrument Sans',sans-serif;font-size:12px;cursor:pointer;transition:all .08s">📋 Copy Full Text</button>
       <button onclick="downloadConvo()" style="flex:1;background:rgba(201,168,76,.06);border:1px solid rgba(201,168,76,.18);color:rgba(240,230,208,.6);padding:9px;font-family:'Instrument Sans',sans-serif;font-size:12px;cursor:pointer;transition:all .08s">💾 Download .txt</button>
     </div>
+    <button onclick="exportChat();document.getElementById('share-modal').style.display='none'" style="width:100%;margin-top:8px;background:rgba(201,168,76,.06);border:1px solid rgba(201,168,76,.18);color:rgba(240,230,208,.6);padding:9px;font-family:'Instrument Sans',sans-serif;font-size:12px;cursor:pointer;transition:all .08s">📄 Export as .md</button>
     <div id="share-msg" style="display:none;margin-top:10px;font-size:12px;color:#4ade80;text-align:center"></div>
   </div>
 </div>
@@ -2415,7 +2413,7 @@ async function genImg(prompt){
     <div class="mb2" id="${lid}">
       <div style="display:flex;align-items:center;gap:10px;color:rgba(201,168,76,.6);font-size:13px">
         <span style="width:18px;height:18px;border:2px solid rgba(201,168,76,.3);border-top-color:var(--gold);border-radius:50%;display:inline-block;animation:spin .8s linear infinite;flex-shrink:0"></span>
-        Generating image… <span style="font-size:11px;opacity:.6">(~8s)</span>
+        Generating image…
       </div>
       <div style="margin-top:8px;width:100%;max-width:420px;height:300px;background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.1);border-radius:8px;overflow:hidden;position:relative">
         <div style="position:absolute;inset:0;background:linear-gradient(90deg,transparent 0%,rgba(201,168,76,.06) 50%,transparent 100%);animation:shimmer 1.6s infinite"></div>
@@ -2431,8 +2429,10 @@ async function genImg(prompt){
       body:JSON.stringify({
         model:'black-forest-labs/FLUX.1-schnell-Free',
         prompt:prompt,
-        width:1024,height:1024,steps:4,n:1,
-        response_format:'b64_json'
+        width:1024,
+        height:1024,
+        steps:4,
+        n:1
       })
     });
 
@@ -2442,28 +2442,37 @@ async function genImg(prompt){
     }
 
     const data=await res.json();
-    const b64=data?.data?.[0]?.b64_json;
-    if(!b64) throw new Error('No image data returned');
+    // Together returns either b64_json or url depending on plan
+    const imgData=data?.data?.[0];
+    if(!imgData) throw new Error('No image returned');
 
-    const imgSrc='data:image/png;base64,'+b64;
     const el=document.getElementById(lid);if(!el)return;
-
     const img=document.createElement('img');
-    img.src=imgSrc;
+
+    if(imgData.b64_json){
+      img.src='data:image/png;base64,'+imgData.b64_json;
+    } else if(imgData.url){
+      img.src=imgData.url;
+    } else {
+      throw new Error('No image data in response');
+    }
+
     img.style.cssText='max-width:100%;border-radius:12px;display:block;box-shadow:0 8px 40px rgba(0,0,0,.6);margin-top:4px;cursor:zoom-in;border:1px solid rgba(201,168,76,.15)';
-    img.onclick=()=>openLightbox(imgSrc);
-    el.innerHTML='';el.appendChild(img);
+    img.onclick=()=>openLightbox(img.src);
+    img.onerror=()=>{el.innerHTML='⚠️ Image loaded but failed to display';};
+    el.innerHTML='';
+    el.appendChild(img);
 
     const acts=document.createElement('div');
-    acts.style.cssText='display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;align-items:center';
+    acts.style.cssText='display:flex;gap:8px;margin-top:10px;flex-wrap:wrap';
     const rb=document.createElement('button');
-    rb.style.cssText='border:1px solid rgba(201,168,76,.3);background:none;color:var(--gold2);font-size:12px;cursor:pointer;padding:5px 14px;font-family:inherit;letter-spacing:.04em';
+    rb.style.cssText='border:1px solid rgba(201,168,76,.3);background:none;color:var(--gold2);font-size:12px;cursor:pointer;padding:5px 14px;font-family:inherit';
     rb.textContent='🔄 Regenerate';rb.onclick=()=>genImg(prompt);
     const dlb=document.createElement('button');
     dlb.style.cssText=rb.style.cssText;dlb.textContent='⬇ Save';
     dlb.onclick=()=>{
       const a=document.createElement('a');
-      a.href=imgSrc;a.download='blemie-image.png';a.click();
+      a.href=img.src;a.download='blemie-image.png';a.click();
     };
     acts.appendChild(rb);acts.appendChild(dlb);
     el.appendChild(acts);
@@ -3102,59 +3111,54 @@ function loadAllSettings(){
 (function(){
   const dot=document.getElementById('cursor-dot');
   const ring=document.getElementById('cursor-ring');
-  // Hide until mouse moves so it doesn't spawn at 0,0
-  if(dot)dot.style.opacity='0';
-  if(ring)ring.style.opacity='0';
   if(!dot||!ring)return;
 
-  // Mouse position (dot snaps here instantly)
-  let mx=0,my=0;
-  // Ring position (lerps toward mouse)
-  let rx=0,ry=0;
-  let hovering=false;
+  // Start both offscreen so they never show at 0,0
+  dot.style.transform='translate(-100px,-100px)';
+  ring.style.transform='translate(-100px,-100px)';
+  // Make sure they're visible (CSS may have hidden them)
+  dot.style.visibility='visible';
+  dot.style.opacity='1';
+  ring.style.visibility='visible';
+  ring.style.opacity='1';
 
-  // Dot snaps directly to mouse — no lag
+  let mx=-100,my=-100,rx=-100,ry=-100,hovering=false;
+
   document.addEventListener('mousemove',e=>{
     mx=e.clientX;my=e.clientY;
     dot.style.transform=`translate(${mx-3.5}px,${my-3.5}px)`;
   });
 
-  // Ring smoothly lerps behind the dot
   function lerp(a,b,t){return a+(b-a)*t;}
   function tick(){
-    rx=lerp(rx,mx,0.12);
-    ry=lerp(ry,my,0.12);
+    rx=lerp(rx,mx,0.12);ry=lerp(ry,my,0.12);
     const size=hovering?40:32;
     ring.style.transform=`translate(${rx-size/2}px,${ry-size/2}px)`;
     requestAnimationFrame(tick);
   }
   tick();
 
-  // Hide/show on leave/enter
-  document.addEventListener('mouseleave',()=>{dot.style.visibility='hidden';ring.style.visibility='hidden';});
-  document.addEventListener('mouseenter',()=>{if(_cursorShown){dot.style.visibility='visible';ring.style.visibility='visible';}});
+  document.addEventListener('mouseleave',()=>{dot.style.opacity='0';ring.style.opacity='0';});
+  document.addEventListener('mouseenter',()=>{dot.style.opacity='1';ring.style.opacity='1';});
 
-  // Click pulse
   document.addEventListener('mousedown',()=>{
     dot.style.boxShadow='0 0 16px rgba(201,168,76,1),0 0 32px rgba(201,168,76,.6)';
     ring.style.width='20px';ring.style.height='20px';ring.style.borderColor='rgba(201,168,76,.9)';
   });
   document.addEventListener('mouseup',()=>{
     dot.style.boxShadow='0 0 10px rgba(201,168,76,.9),0 0 20px rgba(201,168,76,.4)';
-    ring.style.width=hovering?'40px':'32px';ring.style.height=hovering?'40px':'32px';ring.style.borderColor=hovering?'rgba(201,168,76,.8)':'rgba(201,168,76,.45)';
+    ring.style.width=hovering?'40px':'32px';ring.style.height=hovering?'40px':'32px';
+    ring.style.borderColor=hovering?'rgba(201,168,76,.8)':'rgba(201,168,76,.45)';
   });
 
-  // Grow ring on interactive elements
   document.addEventListener('mouseover',e=>{
     if(e.target.closest('button,a,input,textarea,[onclick],.ci,.sg,.pers-item,.gib,.mode-selector')){
-      hovering=true;
-      ring.style.width='40px';ring.style.height='40px';ring.style.borderColor='rgba(201,168,76,.75)';
+      hovering=true;ring.style.width='40px';ring.style.height='40px';ring.style.borderColor='rgba(201,168,76,.75)';
     }
   });
   document.addEventListener('mouseout',e=>{
     if(e.target.closest('button,a,input,textarea,[onclick],.ci,.sg,.pers-item,.gib,.mode-selector')){
-      hovering=false;
-      ring.style.width='32px';ring.style.height='32px';ring.style.borderColor='rgba(201,168,76,.45)';
+      hovering=false;ring.style.width='32px';ring.style.height='32px';ring.style.borderColor='rgba(201,168,76,.45)';
     }
   });
 })();
