@@ -91,12 +91,12 @@ button:active,a:active,.ci:active,.sg:active,.pers-item:active,.gib:active{opaci
 .reaction-badge.mine{border-color:rgba(201,168,76,.4);background:rgba(201,168,76,.12)}
 
 /* ── TOAST ── */
-#toast-container{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:999;display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none}
+#toast-container{position:fixed;top:16px;right:16px;z-index:999;display:flex;flex-direction:column;align-items:flex-end;gap:8px;pointer-events:none;max-width:320px}
 .toast{padding:10px 20px;font-size:13px;font-family:'Instrument Sans',sans-serif;border:1px solid rgba(201,168,76,.25);background:#0f0d09;color:#f0e6d0;letter-spacing:.04em;box-shadow:0 8px 32px rgba(0,0,0,.5);animation:toastIn .25s cubic-bezier(.16,1,.3,1) both;white-space:nowrap}
 .toast.offline{border-color:rgba(255,80,80,.35);color:#ff8080}
 .toast.online{border-color:rgba(74,222,128,.35);color:#4ade80}
 .toast.info{border-color:rgba(201,168,76,.35);color:var(--gold2)}
-@keyframes toastIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@keyframes toastIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:none}}
 
 /* ── FOCUS MODE ── */
 body.focus-mode #sb,body.focus-mode body.focus-mode .topbar{display:none!important}
@@ -959,6 +959,12 @@ button:active:not(:disabled),a:active,.ci:active,.sg:active,.pers-item:active,.n
 .a-field input{transition:border-color 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease !important;}
 .a-field input:focus{box-shadow:0 0 0 2px rgba(201,168,76,.15) !important;transform:translateY(-1px) !important;}
 
+
+/* ── DISCORD-STYLE SETTINGS NAV ── */
+.set-nav-btn{display:flex;align-items:center;gap:8px;width:100%;padding:8px 10px;background:none;border:none;color:rgba(240,230,208,.45);font-family:'Instrument Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;text-align:left;border-radius:4px;transition:background .12s,color .12s}
+.set-nav-btn:hover{background:rgba(201,168,76,.06);color:rgba(240,230,208,.8)}
+.set-nav-btn.active{background:rgba(201,168,76,.1);color:var(--gold2)}
+.set-tab{animation:fadeUp .15s ease both}
 </style>
 </head>
 <body>
@@ -1227,199 +1233,210 @@ button:active:not(:disabled),a:active,.ci:active,.sg:active,.pers-item:active,.n
 </div>
 
 <!-- SETTINGS MODAL -->
-<div id="settings-modal" style="display:none;position:fixed;inset:0;z-index:300;background:#080705;overflow-y:auto;">
-  <div style="width:100%;padding:0 40px 80px;">
-    <div style="padding:20px 0 18px;display:flex;align-items:center;gap:14px;border-bottom:1px solid rgba(201,168,76,.1);margin-bottom:24px;position:sticky;top:0;background:#080705;z-index:10">
-      <button onclick="closeSettings()" style="background:none;border:1px solid rgba(201,168,76,.2);color:rgba(240,230,208,.4);width:36px;height:36px;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;transition:all .08s;flex-shrink:0">←</button>
-      <div style="font-family:'Cabinet Grotesk',sans-serif;font-size:22px;font-weight:900;color:var(--gold2);letter-spacing:-.4px">Settings</div>
-      <div style="flex:1"></div>
-      <button id="reset-defaults-btn" onclick="resetSettings()" style="background:none;border:1px solid rgba(201,168,76,.2);color:rgba(201,168,76,.55);font-family:'Instrument Sans',sans-serif;font-size:12px;padding:7px 14px;cursor:pointer;letter-spacing:.02em;flex-shrink:0;transition:color .15s,border-color .15s" onmouseover="this.style.color='var(--gold2)';this.style.borderColor='rgba(201,168,76,.5)'" onmouseout="this.style.color='rgba(201,168,76,.55)';this.style.borderColor='rgba(201,168,76,.2)'">↩ Restore Defaults</button>
-    </div>
-    <div style="display:flex;flex-direction:column;gap:18px">
-      <div style="display:flex;align-items:center;gap:16px;padding:16px;background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.12)">
-        <div id="set-av" style="width:48px;height:48px;border-radius:50%;background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.2);display:flex;align-items:center;justify-content:center;font-size:20px;overflow:hidden;flex-shrink:0"></div>
-        <div style="flex:1;min-width:0">
-          <div id="set-name" style="font-size:14px;font-weight:600;color:#f0e6d0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></div>
-          <div id="set-email" style="font-size:11px;color:rgba(201,168,76,.4);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></div>
-        </div>
-      </div>
-      <div style="display:flex;flex-direction:column;gap:2px">
-        <div style="font-size:9px;font-weight:600;color:rgba(201,168,76,.35);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:8px">Account Info</div>
-        <div style="padding:13px 14px;background:rgba(201,168,76,.03);border:1px solid rgba(201,168,76,.1);border-bottom:none;display:flex;align-items:center;justify-content:space-between;gap:12px">
-          <div style="flex:1;min-width:0">
-            <div style="font-size:10px;color:rgba(201,168,76,.35);margin-bottom:5px;letter-spacing:.8px;text-transform:uppercase">Display Name</div>
-            <div id="set-dn-display" style="font-size:14px;font-weight:500;color:#f0e6d0"></div>
-            <input id="set-dn-input" type="text" placeholder="Enter display name..." maxlength="30" style="display:none;background:none;border:none;outline:none;border-bottom:1px solid rgba(201,168,76,.4);color:#f0e6d0;font-family:'Instrument Sans',sans-serif;font-size:14px;width:100%;padding:2px 0" onkeydown="if(event.key==='Enter')saveDisplayName();if(event.key==='Escape')cancelEditName()">
-          </div>
-          <button id="set-dn-btn" onclick="editDisplayName()" style="background:none;border:1px solid rgba(201,168,76,.2);color:rgba(201,168,76,.5);padding:4px 10px;font-size:11px;cursor:pointer;font-family:'Instrument Sans',sans-serif;white-space:nowrap;transition:all .08s;letter-spacing:.05em;flex-shrink:0">Edit</button>
-        </div>
-        <div style="padding:13px 14px;background:rgba(201,168,76,.03);border:1px solid rgba(201,168,76,.1);border-bottom:none;display:flex;align-items:center;justify-content:space-between">
-          <div>
-            <div style="font-size:10px;color:rgba(201,168,76,.35);margin-bottom:5px;letter-spacing:.8px;text-transform:uppercase">Email Address</div>
-            <div id="set-email2" style="font-size:14px;font-weight:500;color:#f0e6d0"></div>
-          </div>
-          <div id="set-verified" style="font-size:10px;padding:3px 8px;font-weight:600;letter-spacing:.06em"></div>
-        </div>
-        <div style="padding:13px 14px;background:rgba(201,168,76,.03);border:1px solid rgba(201,168,76,.1);display:flex;align-items:center;justify-content:space-between">
-          <div>
-            <div style="font-size:10px;color:rgba(201,168,76,.35);margin-bottom:5px;letter-spacing:.8px;text-transform:uppercase">Sign-in Method</div>
-            <div id="set-provider" style="font-size:14px;font-weight:500;color:#f0e6d0"></div>
-          </div>
-        </div>
-      </div>
-      <div id="set-pw-section" style="display:none;flex-direction:column;gap:2px">
-        <div style="font-size:9px;font-weight:600;color:rgba(201,168,76,.35);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:8px">Security</div>
-        <div style="padding:13px 14px;background:rgba(201,168,76,.03);border:1px solid rgba(201,168,76,.1);display:flex;align-items:center;justify-content:space-between">
-          <div>
-            <div style="font-size:10px;color:rgba(201,168,76,.35);margin-bottom:5px;letter-spacing:.8px;text-transform:uppercase">Password</div>
-            <div style="font-size:14px;font-weight:500;color:#f0e6d0">••••••••</div>
-          </div>
-          <button onclick="changePassword()" style="background:none;border:1px solid rgba(201,168,76,.2);color:rgba(201,168,76,.5);padding:4px 10px;font-size:11px;cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:all .08s;letter-spacing:.05em">Change</button>
+<div id="settings-modal" style="display:none;position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.85);backdrop-filter:blur(4px)">
+  <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:20px">
+    <div style="width:100%;max-width:780px;height:min(600px,90vh);background:#0e0c08;border:1px solid rgba(201,168,76,.15);display:flex;overflow:hidden;animation:fadeUp .2s cubic-bezier(.16,1,.3,1) both">
+      
+      <!-- LEFT NAV -->
+      <div style="width:200px;flex-shrink:0;background:#080705;border-right:1px solid rgba(201,168,76,.1);display:flex;flex-direction:column;padding:16px 8px;gap:2px;overflow-y:auto">
+        <div style="font-size:10px;font-weight:700;color:rgba(201,168,76,.35);letter-spacing:1.2px;text-transform:uppercase;padding:8px 8px 4px">Account</div>
+        <button class="set-nav-btn active" id="sn-profile" onclick="showSetTab('profile')">👤 Profile</button>
+        <button class="set-nav-btn" id="sn-security" onclick="showSetTab('security')">🔒 Security</button>
+        <div style="font-size:10px;font-weight:700;color:rgba(201,168,76,.35);letter-spacing:1.2px;text-transform:uppercase;padding:12px 8px 4px;margin-top:4px">App</div>
+        <button class="set-nav-btn" id="sn-appearance" onclick="showSetTab('appearance')">🎨 Appearance</button>
+        <button class="set-nav-btn" id="sn-chat" onclick="showSetTab('chat')">💬 Chat</button>
+        <button class="set-nav-btn" id="sn-notifications" onclick="showSetTab('notifications')">🔔 Notifications</button>
+        <div style="flex:1"></div>
+        <div style="border-top:1px solid rgba(201,168,76,.1);padding-top:8px;margin-top:8px;display:flex;flex-direction:column;gap:2px">
+          <button class="set-nav-btn" style="color:rgba(255,120,120,.6)" onclick="closeSettings();signOut()">🚪 Sign Out</button>
+          <button class="set-nav-btn" style="color:rgba(255,60,60,.4);font-size:11px" onclick="deleteAccount()">🗑 Delete Account</button>
         </div>
       </div>
 
-      <!-- ── THEME SECTION ── -->
-      <div>
-        <div style="font-size:9px;font-weight:600;color:rgba(201,168,76,.35);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:10px">🎨 Appearance</div>
-        <div style="display:flex;flex-direction:column;gap:2px">
-          <!-- Dark / Light mode -->
-          <div style="padding:14px;background:rgba(201,168,76,.03);border:1px solid rgba(201,168,76,.1);border-bottom:none;display:flex;align-items:center;justify-content:space-between">
+      <!-- RIGHT CONTENT -->
+      <div style="flex:1;overflow-y:auto;padding:28px 32px;position:relative">
+        
+        <!-- Close button -->
+        <button onclick="closeSettings()" style="position:absolute;top:16px;right:16px;background:none;border:1px solid rgba(201,168,76,.2);color:rgba(240,230,208,.4);width:28px;height:28px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;border-radius:50%">✕</button>
+
+        <!-- PROFILE TAB -->
+        <div id="set-tab-profile" class="set-tab">
+          <div style="font-family:'Cabinet Grotesk',sans-serif;font-size:20px;font-weight:900;color:var(--gold2);margin-bottom:24px">Profile</div>
+          <div style="display:flex;align-items:center;gap:16px;padding:20px;background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.1);margin-bottom:20px">
+            <div id="set-av" style="width:64px;height:64px;border-radius:50%;background:rgba(201,168,76,.1);border:2px solid rgba(201,168,76,.2);display:flex;align-items:center;justify-content:center;font-size:26px;overflow:hidden;flex-shrink:0"></div>
+            <div style="flex:1">
+              <div id="set-name" style="font-size:16px;font-weight:700;color:#f0e6d0;margin-bottom:2px"></div>
+              <div id="set-email" style="font-size:12px;color:rgba(201,168,76,.4)"></div>
+              <div style="display:flex;gap:8px;margin-top:6px">
+                <span id="set-verified" style="font-size:10px;padding:2px 8px;font-weight:600"></span>
+                <span id="set-provider" style="font-size:10px;color:rgba(201,168,76,.4);padding:2px 0"></span>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:12px">
             <div>
-              <div style="font-size:10px;color:rgba(201,168,76,.35);margin-bottom:4px;letter-spacing:.8px;text-transform:uppercase">Light Mode</div>
-              <div style="font-size:12px;color:rgba(240,230,208,.4)">Switch between dark and light</div>
+              <div style="font-size:11px;color:rgba(201,168,76,.4);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px">Display Name</div>
+              <div style="display:flex;gap:8px;align-items:center">
+                <div id="set-dn-display" style="flex:1;font-size:14px;color:#f0e6d0;padding:8px 12px;background:rgba(201,168,76,.03);border:1px solid rgba(201,168,76,.1)"></div>
+                <input id="set-dn-input" type="text" maxlength="30" placeholder="Display name" style="display:none;flex:1;background:rgba(201,168,76,.05);border:1px solid rgba(201,168,76,.3);outline:none;color:#f0e6d0;font-family:'Instrument Sans',sans-serif;font-size:14px;padding:8px 12px" onkeydown="if(event.key==='Enter')saveDisplayName();if(event.key==='Escape')cancelEditName()">
+                <button id="set-dn-btn" onclick="editDisplayName()" style="background:none;border:1px solid rgba(201,168,76,.2);color:rgba(201,168,76,.6);padding:8px 14px;font-size:12px;cursor:pointer;font-family:'Instrument Sans',sans-serif;white-space:nowrap">Edit</button>
+              </div>
             </div>
-            <button id="light-mode-toggle" onclick="toggleTheme()" style="width:48px;height:26px;border-radius:13px;border:none;background:rgba(201,168,76,.2);cursor:pointer;position:relative;transition:background .25s;flex-shrink:0">
-              <div id="light-mode-thumb" style="width:20px;height:20px;border-radius:50%;background:#fff;position:absolute;top:3px;left:3px;transition:left .25s,background .25s"></div>
-            </button>
-          </div>
-          <!-- Theme presets -->
-          <div style="padding:14px;background:rgba(201,168,76,.03);border:1px solid rgba(201,168,76,.1);border-bottom:none">
-            <div style="font-size:10px;color:rgba(201,168,76,.35);margin-bottom:10px;letter-spacing:.8px;text-transform:uppercase">Theme Preset</div>
-            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px" id="theme-presets">
-              <button onclick="applyTheme('gold')" class="theme-btn" id="tb-gold" style="padding:10px 8px;border:1px solid rgba(201,168,76,.3);background:rgba(201,168,76,.08);color:#e8c96e;font-family:'Cabinet Grotesk',sans-serif;font-size:11px;font-weight:700;cursor:pointer;letter-spacing:.04em">✦ Gold</button>
-              <button onclick="applyTheme('rose')" class="theme-btn" id="tb-rose" style="padding:10px 8px;border:1px solid rgba(244,114,182,.3);background:rgba(244,114,182,.08);color:#f472b6;font-family:'Cabinet Grotesk',sans-serif;font-size:11px;font-weight:700;cursor:pointer;letter-spacing:.04em">✦ Rose</button>
-              <button onclick="applyTheme('cyan')" class="theme-btn" id="tb-cyan" style="padding:10px 8px;border:1px solid rgba(34,211,238,.3);background:rgba(34,211,238,.08);color:#22d3ee;font-family:'Cabinet Grotesk',sans-serif;font-size:11px;font-weight:700;cursor:pointer;letter-spacing:.04em">✦ Cyan</button>
-              <button onclick="applyTheme('purple')" class="theme-btn" id="tb-purple" style="padding:10px 8px;border:1px solid rgba(167,139,250,.3);background:rgba(167,139,250,.08);color:#a78bfa;font-family:'Cabinet Grotesk',sans-serif;font-size:11px;font-weight:700;cursor:pointer;letter-spacing:.04em">✦ Purple</button>
-              <button onclick="applyTheme('green')" class="theme-btn" id="tb-green" style="padding:10px 8px;border:1px solid rgba(74,222,128,.3);background:rgba(74,222,128,.08);color:#4ade80;font-family:'Cabinet Grotesk',sans-serif;font-size:11px;font-weight:700;cursor:pointer;letter-spacing:.04em">✦ Green</button>
-              <button onclick="applyTheme('orange')" class="theme-btn" id="tb-orange" style="padding:10px 8px;border:1px solid rgba(251,146,60,.3);background:rgba(251,146,60,.08);color:#fb923c;font-family:'Cabinet Grotesk',sans-serif;font-size:11px;font-weight:700;cursor:pointer;letter-spacing:.04em">✦ Orange</button>
-            </div>
-          </div>
-          <!-- Custom accent color -->
-          <div style="padding:14px;background:rgba(201,168,76,.03);border:1px solid rgba(201,168,76,.1);border-bottom:none;display:flex;align-items:center;justify-content:space-between">
             <div>
-              <div style="font-size:10px;color:rgba(201,168,76,.35);margin-bottom:5px;letter-spacing:.8px;text-transform:uppercase">Custom Accent Color</div>
-              <div style="font-size:12px;color:rgba(240,230,208,.5)">Pick any color you want</div>
-            </div>
-            <input type="color" id="custom-color" value="#c9a84c" onchange="applyCustomColor(this.value)" style="width:44px;height:36px;border:1px solid rgba(201,168,76,.3);background:rgba(201,168,76,.06);cursor:pointer;padding:2px">
-          </div>
-          <!-- Cursor style -->
-          <div style="padding:14px;background:rgba(201,168,76,.03);border:1px solid rgba(201,168,76,.1);border-bottom:none">
-            <div style="font-size:10px;color:rgba(201,168,76,.35);margin-bottom:10px;letter-spacing:.8px;text-transform:uppercase">Cursor Style</div>
-            <div style="display:flex;gap:8px;flex-wrap:wrap">
-              <button onclick="setCursor('dot')" id="cur-dot" style="padding:7px 12px;border:1px solid rgba(201,168,76,.3);background:rgba(201,168,76,.08);color:#e8c96e;font-family:'Instrument Sans',sans-serif;font-size:11px;cursor:pointer">● Dot</button>
-              <button onclick="setCursor('ring')" id="cur-ring" style="padding:7px 12px;border:1px solid rgba(201,168,76,.1);background:none;color:rgba(240,230,208,.4);font-family:'Instrument Sans',sans-serif;font-size:11px;cursor:pointer">◎ Ring only</button>
-              <button onclick="setCursor('cross')" id="cur-cross" style="padding:7px 12px;border:1px solid rgba(201,168,76,.1);background:none;color:rgba(240,230,208,.4);font-family:'Instrument Sans',sans-serif;font-size:11px;cursor:pointer">✕ Cross</button>
-              <button onclick="setCursor('none')" id="cur-none" style="padding:7px 12px;border:1px solid rgba(201,168,76,.1);background:none;color:rgba(240,230,208,.4);font-family:'Instrument Sans',sans-serif;font-size:11px;cursor:pointer">○ Default</button>
+              <div style="font-size:11px;color:rgba(201,168,76,.4);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px">Email</div>
+              <div id="set-email2" style="font-size:14px;color:rgba(240,230,208,.5);padding:8px 12px;background:rgba(201,168,76,.03);border:1px solid rgba(201,168,76,.1)"></div>
             </div>
           </div>
-          <!-- Background style -->
-          <div style="padding:14px;background:rgba(201,168,76,.03);border:1px solid rgba(201,168,76,.1)">
-            <div style="font-size:10px;color:rgba(201,168,76,.35);margin-bottom:10px;letter-spacing:.8px;text-transform:uppercase">Background</div>
-            <div style="display:flex;gap:8px;flex-wrap:wrap">
-              <button onclick="setBg('dark')" id="bg-dark" style="padding:7px 12px;border:1px solid rgba(201,168,76,.3);background:rgba(201,168,76,.08);color:#e8c96e;font-family:'Instrument Sans',sans-serif;font-size:11px;cursor:pointer">◼ Dark</button>
-              <button onclick="setBg('darker')" id="bg-darker" style="padding:7px 12px;border:1px solid rgba(201,168,76,.1);background:none;color:rgba(240,230,208,.4);font-family:'Instrument Sans',sans-serif;font-size:11px;cursor:pointer">⬛ Pitch Black</button>
-              <button onclick="setBg('soft')" id="bg-soft" style="padding:7px 12px;border:1px solid rgba(201,168,76,.1);background:none;color:rgba(240,230,208,.4);font-family:'Instrument Sans',sans-serif;font-size:11px;cursor:pointer">▪ Soft Dark</button>
+          <div id="set-msg" style="display:none;margin-top:16px;font-size:12px;padding:10px 14px;border-radius:6px"></div>
+        </div>
+
+        <!-- SECURITY TAB -->
+        <div id="set-tab-security" class="set-tab" style="display:none">
+          <div style="font-family:'Cabinet Grotesk',sans-serif;font-size:20px;font-weight:900;color:var(--gold2);margin-bottom:24px">Security</div>
+          <div id="set-pw-section" style="display:flex;flex-direction:column;gap:12px">
+            <div style="padding:16px;background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.1);display:flex;align-items:center;justify-content:space-between">
+              <div>
+                <div style="font-size:14px;font-weight:600;color:#f0e6d0">Password</div>
+                <div style="font-size:12px;color:rgba(201,168,76,.4);margin-top:2px">Change your account password</div>
+              </div>
+              <button id="set-pw-btn" onclick="changePassword()" style="background:none;border:1px solid rgba(201,168,76,.25);color:rgba(201,168,76,.7);padding:8px 16px;font-size:12px;cursor:pointer;font-family:'Instrument Sans',sans-serif">Send Reset Email</button>
+            </div>
+          </div>
+          <div style="margin-top:20px;padding:16px;background:rgba(255,60,60,.04);border:1px solid rgba(255,60,60,.15)">
+            <div style="font-size:14px;font-weight:600;color:rgba(255,120,120,.8);margin-bottom:4px">Danger Zone</div>
+            <div style="font-size:12px;color:rgba(255,120,120,.4);margin-bottom:12px">Permanently delete your account and all data</div>
+            <button onclick="deleteAccount()" style="background:rgba(255,60,60,.08);border:1px solid rgba(255,60,60,.25);color:rgba(255,100,100,.7);padding:8px 16px;font-size:12px;cursor:pointer;font-family:'Instrument Sans',sans-serif">Delete Account</button>
+          </div>
+        </div>
+
+        <!-- APPEARANCE TAB -->
+        <div id="set-tab-appearance" class="set-tab" style="display:none">
+          <div style="font-family:'Cabinet Grotesk',sans-serif;font-size:20px;font-weight:900;color:var(--gold2);margin-bottom:24px">Appearance</div>
+          
+          <div style="display:flex;flex-direction:column;gap:20px">
+            <!-- Theme -->
+            <div>
+              <div style="font-size:11px;color:rgba(201,168,76,.4);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px">Color Theme</div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap">
+                <button onclick="applyTheme('gold')" id="tb-gold" class="theme-btn" style="padding:10px 16px;border:1px solid rgba(201,168,76,.3);background:rgba(201,168,76,.08);color:#e8c96e;font-family:'Cabinet Grotesk',sans-serif;font-size:12px;font-weight:700;cursor:pointer">✦ Gold</button>
+                <button onclick="applyTheme('rose')" id="tb-rose" class="theme-btn" style="padding:10px 16px;border:1px solid rgba(244,114,182,.3);background:rgba(244,114,182,.08);color:#f472b6;font-family:'Cabinet Grotesk',sans-serif;font-size:12px;font-weight:700;cursor:pointer">✦ Rose</button>
+                <button onclick="applyTheme('cyan')" id="tb-cyan" class="theme-btn" style="padding:10px 16px;border:1px solid rgba(34,211,238,.3);background:rgba(34,211,238,.08);color:#22d3ee;font-family:'Cabinet Grotesk',sans-serif;font-size:12px;font-weight:700;cursor:pointer">✦ Cyan</button>
+                <button onclick="applyTheme('violet')" id="tb-violet" class="theme-btn" style="padding:10px 16px;border:1px solid rgba(167,139,250,.3);background:rgba(167,139,250,.08);color:#a78bfa;font-family:'Cabinet Grotesk',sans-serif;font-size:12px;font-weight:700;cursor:pointer">✦ Violet</button>
+              </div>
+            </div>
+
+            <!-- Light/Dark -->
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.1)">
+              <div>
+                <div style="font-size:14px;font-weight:600;color:#f0e6d0">Light Mode</div>
+                <div style="font-size:12px;color:rgba(201,168,76,.4);margin-top:2px">Switch to light theme</div>
+              </div>
+              <button id="light-mode-toggle" onclick="toggleTheme()" style="width:44px;height:24px;border-radius:12px;border:none;background:rgba(201,168,76,.2);cursor:pointer;position:relative;transition:background .25s">
+                <span style="position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:var(--gold);transition:transform .25s;display:block"></span>
+              </button>
+            </div>
+
+            <!-- Font size -->
+            <div>
+              <div style="font-size:11px;color:rgba(201,168,76,.4);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px">Font Size</div>
+              <div style="display:flex;gap:8px">
+                <button onclick="setFontSize('sm')" style="padding:8px 16px;border:1px solid rgba(201,168,76,.2);background:none;color:rgba(240,230,208,.5);font-family:'Instrument Sans',sans-serif;font-size:12px;cursor:pointer">Small</button>
+                <button onclick="setFontSize('md')" style="padding:8px 16px;border:1px solid rgba(201,168,76,.3);background:rgba(201,168,76,.08);color:var(--gold2);font-family:'Instrument Sans',sans-serif;font-size:12px;cursor:pointer">Medium</button>
+                <button onclick="setFontSize('lg')" style="padding:8px 16px;border:1px solid rgba(201,168,76,.2);background:none;color:rgba(240,230,208,.5);font-family:'Instrument Sans',sans-serif;font-size:12px;cursor:pointer">Large</button>
+              </div>
+            </div>
+
+            <!-- Custom color -->
+            <div>
+              <div style="font-size:11px;color:rgba(201,168,76,.4);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px">Custom Accent Color</div>
+              <div style="display:flex;align-items:center;gap:12px">
+                <input type="color" id="custom-color" value="#c9a84c" oninput="applyCustomColor(this.value)" style="width:40px;height:40px;border:1px solid rgba(201,168,76,.3);background:none;cursor:pointer;padding:2px">
+                <span style="font-size:12px;color:rgba(201,168,76,.4)">Pick any color</span>
+              </div>
+            </div>
+
+            <!-- Cursor -->
+            <div>
+              <div style="font-size:11px;color:rgba(201,168,76,.4);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px">Cursor Style</div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap">
+                <button onclick="setCursor('dot')" style="padding:8px 14px;border:1px solid rgba(201,168,76,.25);background:none;color:rgba(240,230,208,.5);font-family:'Instrument Sans',sans-serif;font-size:12px;cursor:pointer">● Dot</button>
+                <button onclick="setCursor('ring')" style="padding:8px 14px;border:1px solid rgba(201,168,76,.25);background:none;color:rgba(240,230,208,.5);font-family:'Instrument Sans',sans-serif;font-size:12px;cursor:pointer">○ Ring</button>
+                <button onclick="setCursor('none')" style="padding:8px 14px;border:1px solid rgba(201,168,76,.25);background:none;color:rgba(240,230,208,.5);font-family:'Instrument Sans',sans-serif;font-size:12px;cursor:pointer">✕ Default</button>
+              </div>
+            </div>
+
+            <button onclick="resetSettings()" id="reset-defaults-btn" style="align-self:flex-start;background:none;border:1px solid rgba(201,168,76,.2);color:rgba(201,168,76,.5);padding:8px 16px;font-family:'Instrument Sans',sans-serif;font-size:12px;cursor:pointer">↩ Restore Defaults</button>
+          </div>
+        </div>
+
+        <!-- CHAT TAB -->
+        <div id="set-tab-chat" class="set-tab" style="display:none">
+          <div style="font-family:'Cabinet Grotesk',sans-serif;font-size:20px;font-weight:900;color:var(--gold2);margin-bottom:24px">Chat Settings</div>
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.1)">
+              <div>
+                <div style="font-size:14px;font-weight:600;color:#f0e6d0">Enter to Send</div>
+                <div style="font-size:12px;color:rgba(201,168,76,.4);margin-top:2px">Press Enter to send, Shift+Enter for newline</div>
+              </div>
+              <button id="toggle-enter" onclick="toggleEnterSend()" style="width:44px;height:24px;border-radius:12px;border:none;background:rgba(201,168,76,.6);cursor:pointer;position:relative;transition:background .25s">
+                <span style="position:absolute;top:3px;left:21px;width:18px;height:18px;border-radius:50%;background:var(--gold2);transition:transform .25s;display:block"></span>
+              </button>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.1)">
+              <div>
+                <div style="font-size:14px;font-weight:600;color:#f0e6d0">Particles & Animation</div>
+                <div style="font-size:12px;color:rgba(201,168,76,.4);margin-top:2px">Background particle effects</div>
+              </div>
+              <button id="toggle-particles" onclick="toggleParticles()" style="width:44px;height:24px;border-radius:12px;border:none;background:rgba(201,168,76,.6);cursor:pointer;position:relative;transition:background .25s">
+                <span style="position:absolute;top:3px;left:21px;width:18px;height:18px;border-radius:50%;background:var(--gold2);transition:transform .25s;display:block"></span>
+              </button>
+            </div>
+            <div>
+              <div style="font-size:11px;color:rgba(201,168,76,.4);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px">Sidebar Width</div>
+              <div style="display:flex;align-items:center;gap:12px">
+                <input type="range" id="sidebar-width-slider" min="200" max="380" value="268" oninput="setSidebarWidth(+this.value)" style="flex:1;accent-color:var(--gold);cursor:pointer">
+                <span id="sidebar-width-val" style="font-size:12px;color:var(--gold2);min-width:36px">268px</span>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-
-      <!-- ── PARTICLES & EFFECTS ── -->
-      <div>
-        <div style="font-size:9px;font-weight:600;color:rgba(201,168,76,.35);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:10px">✨ Particles & Effects</div>
-        <div style="display:flex;flex-direction:column;gap:2px">
-          <div style="padding:14px;background:rgba(201,168,76,.03);border:1px solid rgba(201,168,76,.1);border-bottom:none;display:flex;align-items:center;justify-content:space-between">
-            <div>
-              <div style="font-size:10px;color:rgba(201,168,76,.35);margin-bottom:4px;letter-spacing:.8px;text-transform:uppercase">Floating Particles</div>
-              <div style="font-size:12px;color:rgba(240,230,208,.4)">Gold dots that float around</div>
+        <!-- NOTIFICATIONS TAB -->
+        <div id="set-tab-notifications" class="set-tab" style="display:none">
+          <div style="font-family:'Cabinet Grotesk',sans-serif;font-size:20px;font-weight:900;color:var(--gold2);margin-bottom:24px">Notifications</div>
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.1)">
+              <div>
+                <div style="font-size:14px;font-weight:600;color:#f0e6d0">Send Sound</div>
+                <div style="font-size:12px;color:rgba(201,168,76,.4);margin-top:2px">Chime when sending a message</div>
+              </div>
+              <button id="toggle-sound" onclick="toggleSound()" style="width:44px;height:24px;border-radius:12px;border:none;background:rgba(201,168,76,.6);cursor:pointer;position:relative;transition:background .25s">
+                <span style="position:absolute;top:3px;left:21px;width:18px;height:18px;border-radius:50%;background:var(--gold2);transition:transform .25s;display:block"></span>
+              </button>
             </div>
-            <button id="toggle-particles" onclick="toggleParticles()" style="width:48px;height:26px;border-radius:13px;border:none;background:rgba(201,168,76,.7);cursor:pointer;position:relative;transition:background .2s;flex-shrink:0">
-              <div id="toggle-particles-thumb" style="width:20px;height:20px;border-radius:50%;background:#fff;position:absolute;top:3px;right:3px;transition:right .2s"></div>
-            </button>
-          </div>
-          <div style="padding:14px;background:rgba(201,168,76,.03);border:1px solid rgba(201,168,76,.1);border-bottom:none;display:flex;align-items:center;justify-content:space-between">
-            <div>
-              <div style="font-size:10px;color:rgba(201,168,76,.35);margin-bottom:4px;letter-spacing:.8px;text-transform:uppercase">Meteor Streaks</div>
-              <div style="font-size:12px;color:rgba(240,230,208,.4)">1 streak every second</div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.1)">
+              <div>
+                <div style="font-size:14px;font-weight:600;color:#f0e6d0">Tab Title Indicator</div>
+                <div style="font-size:12px;color:rgba(201,168,76,.4);margin-top:2px">Show "blemie is typing..." in tab</div>
+              </div>
+              <button id="toggle-tabtitle" onclick="toggleTabTitle()" style="width:44px;height:24px;border-radius:12px;border:none;background:rgba(201,168,76,.6);cursor:pointer;position:relative;transition:background .25s">
+                <span style="position:absolute;top:3px;left:21px;width:18px;height:18px;border-radius:50%;background:var(--gold2);transition:transform .25s;display:block"></span>
+              </button>
             </div>
-            <button id="toggle-meteors" onclick="toggleMeteors()" style="width:48px;height:26px;border-radius:13px;border:none;background:rgba(201,168,76,.7);cursor:pointer;position:relative;transition:background .2s;flex-shrink:0">
-              <div id="toggle-meteors-thumb" style="width:20px;height:20px;border-radius:50%;background:#fff;position:absolute;top:3px;right:3px;transition:right .2s"></div>
-            </button>
-          </div>
-          <div style="padding:14px;background:rgba(201,168,76,.03);border:1px solid rgba(201,168,76,.1)">
-            <div style="font-size:10px;color:rgba(201,168,76,.35);margin-bottom:10px;letter-spacing:.8px;text-transform:uppercase">Particle Density</div>
-            <div style="display:flex;align-items:center;gap:12px">
-              <input type="range" id="particle-slider" min="20" max="300" value="120" oninput="updateParticleDensity(+this.value);document.getElementById('particle-count').textContent=this.value" style="flex:1;accent-color:var(--gold);cursor:pointer">
-              <span id="particle-count" style="font-size:12px;color:var(--gold2);min-width:28px;text-align:right">120</span>
+            <div style="padding:14px 16px;background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.1)">
+              <div style="font-size:14px;font-weight:600;color:#f0e6d0;margin-bottom:4px">Keyboard Shortcuts</div>
+              <div style="font-size:12px;color:rgba(201,168,76,.4);margin-bottom:10px">Quick reference</div>
+              <div style="display:flex;flex-direction:column;gap:6px">
+                <div style="display:flex;justify-content:space-between;font-size:12px;color:rgba(240,230,208,.5)"><span>New chat</span><span style="font-family:monospace;background:rgba(201,168,76,.08);padding:1px 6px;border:1px solid rgba(201,168,76,.2);color:var(--gold2)">Ctrl+K</span></div>
+                <div style="display:flex;justify-content:space-between;font-size:12px;color:rgba(240,230,208,.5)"><span>Focus input</span><span style="font-family:monospace;background:rgba(201,168,76,.08);padding:1px 6px;border:1px solid rgba(201,168,76,.2);color:var(--gold2)">Ctrl+/</span></div>
+                <div style="display:flex;justify-content:space-between;font-size:12px;color:rgba(240,230,208,.5)"><span>Focus mode</span><span style="font-family:monospace;background:rgba(201,168,76,.08);padding:1px 6px;border:1px solid rgba(201,168,76,.2);color:var(--gold2)">Ctrl+Shift+F</span></div>
+                <div style="display:flex;justify-content:space-between;font-size:12px;color:rgba(240,230,208,.5)"><span>Shortcuts help</span><span style="font-family:monospace;background:rgba(201,168,76,.08);padding:1px 6px;border:1px solid rgba(201,168,76,.2);color:var(--gold2)">?</span></div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- ── CHAT APPEARANCE ── -->
-      <div>
-        <div style="font-size:9px;font-weight:600;color:rgba(201,168,76,.35);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:10px">💬 Chat Style</div>
-        <div style="display:flex;flex-direction:column;gap:2px">
-          <div style="padding:14px;background:rgba(201,168,76,.03);border:1px solid rgba(201,168,76,.1);border-bottom:none">
-            <div style="font-size:10px;color:rgba(201,168,76,.35);margin-bottom:10px;letter-spacing:.8px;text-transform:uppercase">Message Bubbles</div>
-            <div style="display:flex;gap:8px;flex-wrap:wrap">
-              <button onclick="setMsgStyle('sharp')" id="ms-sharp" style="padding:7px 12px;border:1px solid rgba(201,168,76,.3);background:rgba(201,168,76,.08);color:#e8c96e;font-family:'Instrument Sans',sans-serif;font-size:11px;cursor:pointer">◼ Sharp</button>
-              <button onclick="setMsgStyle('soft')" id="ms-soft" style="padding:7px 12px;border:1px solid rgba(201,168,76,.1);background:none;color:rgba(240,230,208,.4);font-family:'Instrument Sans',sans-serif;font-size:11px;cursor:pointer">▪ Soft</button>
-              <button onclick="setMsgStyle('round')" id="ms-round" style="padding:7px 12px;border:1px solid rgba(201,168,76,.1);background:none;color:rgba(240,230,208,.4);font-family:'Instrument Sans',sans-serif;font-size:11px;cursor:pointer">● Round</button>
-              <button onclick="setMsgStyle('none')" id="ms-none" style="padding:7px 12px;border:1px solid rgba(201,168,76,.1);background:none;color:rgba(240,230,208,.4);font-family:'Instrument Sans',sans-serif;font-size:11px;cursor:pointer">○ Minimal</button>
-            </div>
-          </div>
-          <div style="padding:14px;background:rgba(201,168,76,.03);border:1px solid rgba(201,168,76,.1);border-bottom:none">
-            <div style="font-size:10px;color:rgba(201,168,76,.35);margin-bottom:10px;letter-spacing:.8px;text-transform:uppercase">Font Size</div>
-            <div style="display:flex;gap:8px">
-              <button onclick="setFontSize('sm')" id="fs-sm" style="padding:7px 14px;border:1px solid rgba(201,168,76,.1);background:none;color:rgba(240,230,208,.4);font-family:'Instrument Sans',sans-serif;font-size:11px;cursor:pointer">A Small</button>
-              <button onclick="setFontSize('md')" id="fs-md" style="padding:7px 14px;border:1px solid rgba(201,168,76,.3);background:rgba(201,168,76,.08);color:#e8c96e;font-family:'Instrument Sans',sans-serif;font-size:13px;cursor:pointer">A Medium</button>
-              <button onclick="setFontSize('lg')" id="fs-lg" style="padding:7px 14px;border:1px solid rgba(201,168,76,.1);background:none;color:rgba(240,230,208,.4);font-family:'Instrument Sans',sans-serif;font-size:15px;cursor:pointer">A Large</button>
-            </div>
-          </div>
-          <div style="padding:14px;background:rgba(201,168,76,.03);border:1px solid rgba(201,168,76,.1);display:flex;align-items:center;justify-content:space-between">
-            <div>
-              <div style="font-size:10px;color:rgba(201,168,76,.35);margin-bottom:4px;letter-spacing:.8px;text-transform:uppercase">Send on Enter</div>
-              <div style="font-size:12px;color:rgba(240,230,208,.4)">Enter sends · Shift+Enter = newline</div>
-            </div>
-            <button id="toggle-enter" onclick="toggleEnterSend()" style="width:48px;height:26px;border-radius:13px;border:none;background:rgba(201,168,76,.7);cursor:pointer;position:relative;transition:background .2s;flex-shrink:0">
-              <div id="toggle-enter-thumb" style="width:20px;height:20px;border-radius:50%;background:#fff;position:absolute;top:3px;right:3px;transition:right .2s"></div>
-            </button>
-          </div>
-        </div>
       </div>
-
-      <!-- ── SIDEBAR ── -->
-      <div>
-        <div style="font-size:9px;font-weight:600;color:rgba(201,168,76,.35);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:10px">📐 Layout</div>
-        <div style="display:flex;flex-direction:column;gap:2px">
-          <div style="padding:14px;background:rgba(201,168,76,.03);border:1px solid rgba(201,168,76,.1)">
-            <div style="font-size:10px;color:rgba(201,168,76,.35);margin-bottom:10px;letter-spacing:.8px;text-transform:uppercase">Sidebar Width</div>
-            <div style="display:flex;align-items:center;gap:12px">
-              <input type="range" id="sidebar-width-slider" min="200" max="380" value="268" oninput="setSidebarWidth(+this.value)" style="flex:1;accent-color:var(--gold);cursor:pointer">
-              <span id="sidebar-width-val" style="font-size:12px;color:var(--gold2);min-width:36px">268px</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div style="display:flex;flex-direction:column;gap:8px">
-        <div style="font-size:9px;font-weight:600;color:rgba(201,168,76,.35);text-transform:uppercase;letter-spacing:1.2px">Account</div>
-        <button onclick="closeSettings();signOut()" style="padding:11px 14px;background:rgba(255,80,80,.05);border:1px solid rgba(255,80,80,.15);color:rgba(255,128,128,.65);font-family:'Instrument Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .08s;text-align:left;letter-spacing:.02em">🚪 Sign Out</button>
-        <button onclick="deleteAccount()" style="padding:11px 14px;background:rgba(255,40,40,.04);border:1px solid rgba(255,40,40,.1);color:rgba(255,85,85,.5);font-family:'Instrument Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .08s;text-align:left;letter-spacing:.02em">🗑️ Delete Account</button>
-      </div>
-      <div id="set-msg" style="display:none;font-size:12px;padding:10px 0;letter-spacing:.04em"></div>
     </div>
   </div>
 </div>
@@ -2064,9 +2081,12 @@ function fb(b){return b<1024?b+' B':b<1048576?(b/1024).toFixed(1)+' KB':(b/10485
 
 // ── SEND ──
 async function send(){
+  let streamDiv=null,streamBub=null;
   const inp=document.getElementById('ui');
   const txt=(inp.value||'').trim();
   if((!txt&&!att)||busy)return;
+  playChime();
+  setTypingTitle();
 
   busy=true;
   const sb2=document.getElementById('sb2');
@@ -2172,8 +2192,8 @@ async function send(){
       }
 
       // Create streaming bubble
-      const streamDiv=addMsg('ai','');
-      const streamBub=streamDiv.querySelector('.mb2');
+      streamDiv=addMsg('ai','');
+      streamBub=streamDiv.querySelector('.mb2');
 
       const reader=res.body.getReader();
       const decoder=new TextDecoder();
@@ -2204,7 +2224,7 @@ async function send(){
 
       // Final render — remove cursor
       reply=reply.replace(/<think>[\s\S]*?<\/think>/gi,'').trim();
-      streamBub.innerHTML=renderMd(reply);
+      if(streamBub)streamBub.innerHTML=renderMd(reply);
 
     }catch(fetchErr){
       fadeRemove(te);
@@ -2271,6 +2291,7 @@ async function send(){
     busy=false;
     sb2.disabled=false;
     inp.focus();
+    clearTypingTitle();
   }
 }
 
@@ -2498,8 +2519,8 @@ async function deleteAccount(){
 }
 
 function openSettings(){
+  showSetTab('profile');
   const modal=document.getElementById('settings-modal');
-  modal.scrollTop=0;
   modal.style.display='block';
   modal.style.animation='none';
   modal.offsetWidth; // force reflow
@@ -3264,6 +3285,42 @@ function addTyping(){
   draw();
 })();
 
+// ── SETTINGS TAB SWITCHER ──
+function showSetTab(tab){
+  document.querySelectorAll('.set-tab').forEach(function(t){t.style.display='none';});
+  document.querySelectorAll('.set-nav-btn').forEach(function(b){b.classList.remove('active');});
+  var el=document.getElementById('set-tab-'+tab);
+  if(el)el.style.display='block';
+  var btn=document.getElementById('sn-'+tab);
+  if(btn)btn.classList.add('active');
+}
+
+// ── SOUND TOGGLE ──
+var soundEnabled=true;
+function toggleSound(){
+  soundEnabled=!soundEnabled;
+  var btn=document.getElementById('toggle-sound');
+  if(btn){
+    btn.style.background=soundEnabled?'rgba(201,168,76,.6)':'rgba(255,255,255,.1)';
+    var span=btn.querySelector('span');
+    if(span)span.style.transform=soundEnabled?'':'translateX(-18px)';
+  }
+  localStorage.setItem('blemie_sound',soundEnabled?'1':'0');
+}
+
+// ── TAB TITLE TOGGLE ──
+var tabTitleEnabled=true;
+function toggleTabTitle(){
+  tabTitleEnabled=!tabTitleEnabled;
+  var btn=document.getElementById('toggle-tabtitle');
+  if(btn){
+    btn.style.background=tabTitleEnabled?'rgba(201,168,76,.6)':'rgba(255,255,255,.1)';
+    var span=btn.querySelector('span');
+    if(span)span.style.transform=tabTitleEnabled?'':'translateX(-18px)';
+  }
+  localStorage.setItem('blemie_tabtitle',tabTitleEnabled?'1':'0');
+}
+
 // ══ WORD-BY-WORD ANIMATION ══
 (function initWordAnim(){
   const el=document.getElementById('auth-desc');
@@ -3579,11 +3636,7 @@ addMsg=function(role,text){
 };
 
 // ── PATCH send() FOR CHIME + TAB TITLE ──
-const __origSend=send;
-send=async function(){
-  playChime();setTypingTitle();
-  try{await __origSend();}finally{clearTypingTitle();}
-};
+// send() patched inline below
 
 // ── PATCH newChat() FOR CONFETTI ──
 const __origNewChat=newChat;
