@@ -8,6 +8,15 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.min.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+/* ── GLOBAL SMOOTHNESS ── */
+html{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility}
+*{-webkit-tap-highlight-color:transparent}
+/* Use GPU for all animated elements */
+.msg,.ci,.topbar,.topbar-btn,.gib,.nc-btn,.sb-foot-btn,.a-btn,.ob,.sg,.mode-selector,.mode-opt,.sugg-chip,.msg-act-btn,.toast,.react-btn{will-change:transform,opacity;transform:translateZ(0)}
+/* Smooth scrolling everywhere */
+#msgs,#cl,#pers-modal *{scroll-behavior:smooth;-webkit-overflow-scrolling:touch}
+/* Remove all transition:none — replace with snappy transitions */
+button,a,.ci,.topbar-btn,.gib,.nc-btn{transition:opacity .12s ease,border-color .12s ease,background .12s ease,color .12s ease,box-shadow .15s ease !important}
 :root{
   --bg:#080705;--surface:#0f0d09;--s2:#141109;--s3:#1a160e;
   --b1:rgba(201,168,76,0.08);--b2:rgba(201,168,76,0.13);
@@ -1086,7 +1095,6 @@ button:active:not(:disabled),a:active,.ci:active,.sg:active,.pers-item:active,.n
         </div>
         <span class="top-t" id="tt"></span>
         <div class="topbar-actions">
-          <button id="theme-btn" onclick="toggleTheme()" title="Toggle light/dark">🌙</button>
           <button class="topbar-btn" onclick="exportChat()" title="Export chat as .md">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
             Export
@@ -1276,6 +1284,16 @@ button:active:not(:disabled),a:active,.ci:active,.sg:active,.pers-item:active,.n
       <div>
         <div style="font-size:9px;font-weight:600;color:rgba(201,168,76,.35);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:10px">🎨 Appearance</div>
         <div style="display:flex;flex-direction:column;gap:2px">
+          <!-- Dark / Light mode -->
+          <div style="padding:14px;background:rgba(201,168,76,.03);border:1px solid rgba(201,168,76,.1);border-bottom:none;display:flex;align-items:center;justify-content:space-between">
+            <div>
+              <div style="font-size:10px;color:rgba(201,168,76,.35);margin-bottom:4px;letter-spacing:.8px;text-transform:uppercase">Light Mode</div>
+              <div style="font-size:12px;color:rgba(240,230,208,.4)">Switch between dark and light</div>
+            </div>
+            <button id="light-mode-toggle" onclick="toggleTheme()" style="width:48px;height:26px;border-radius:13px;border:none;background:rgba(201,168,76,.2);cursor:pointer;position:relative;transition:background .25s;flex-shrink:0">
+              <div id="light-mode-thumb" style="width:20px;height:20px;border-radius:50%;background:#fff;position:absolute;top:3px;left:3px;transition:left .25s,background .25s"></div>
+            </button>
+          </div>
           <!-- Theme presets -->
           <div style="padding:14px;background:rgba(201,168,76,.03);border:1px solid rgba(201,168,76,.1);border-bottom:none">
             <div style="font-size:10px;color:rgba(201,168,76,.35);margin-bottom:10px;letter-spacing:.8px;text-transform:uppercase">Theme Preset</div>
@@ -3184,249 +3202,6 @@ function addTyping(){
   }
   setInterval(spawnMeteor,1800+Math.random()*2000);
 
-  // ── GOLDEN DRAGON ──
-  const dragon={
-    segments:[],segCount:28,t:0,
-    hx:-200,hy:H*0.3,hdx:2,hdy:0.5,
-    speed:2.2,active:false,done:false,
-    fireParticles:[],noiseSeed:Math.random()*100,
-    turnTimer:0,turnTarget:{x:W*0.5,y:H*0.4}
-  };
-  for(let i=0;i<dragon.segCount;i++) dragon.segments.push({x:-200-i*20,y:H*0.3,angle:0});
-  // start after 2s, never stops — always flying around
-  setTimeout(()=>resetDragon(),2000);
-
-  function drawDragonHead(x,y,angle,scale){
-    ctx.save();ctx.translate(x,y);ctx.rotate(angle);ctx.scale(scale,scale);
-    // glow
-    const grd=ctx.createRadialGradient(0,0,8,0,0,55);
-    grd.addColorStop(0,'rgba(255,220,80,0.18)');grd.addColorStop(1,'rgba(201,168,76,0)');
-    ctx.beginPath();ctx.arc(0,0,55,0,Math.PI*2);ctx.fillStyle=grd;ctx.fill();
-    // neck base
-    ctx.beginPath();ctx.ellipse(-18,0,22,13,0,0,Math.PI*2);
-    const bodyGrd=ctx.createLinearGradient(-18,-13,-18,13);
-    bodyGrd.addColorStop(0,'#f0c040');bodyGrd.addColorStop(0.5,'#c9a84c');bodyGrd.addColorStop(1,'#8a6f2e');
-    ctx.fillStyle=bodyGrd;ctx.fill();
-    ctx.strokeStyle='rgba(255,200,60,0.6)';ctx.lineWidth=1;ctx.stroke();
-    // main head shape
-    ctx.beginPath();
-    ctx.moveTo(28,0);ctx.bezierCurveTo(32,-8,20,-16,4,-14);
-    ctx.bezierCurveTo(-10,-12,-16,-6,-18,0);
-    ctx.bezierCurveTo(-16,6,-10,12,4,14);
-    ctx.bezierCurveTo(20,16,32,8,28,0);
-    const headGrd=ctx.createLinearGradient(-18,-14,28,14);
-    headGrd.addColorStop(0,'#f5d060');headGrd.addColorStop(0.4,'#d4a832');headGrd.addColorStop(1,'#9a7a20');
-    ctx.fillStyle=headGrd;ctx.fill();
-    ctx.strokeStyle='rgba(255,210,60,0.8)';ctx.lineWidth=1.2;ctx.stroke();
-    // snout
-    ctx.beginPath();ctx.moveTo(28,0);ctx.bezierCurveTo(38,-5,42,-3,44,0);ctx.bezierCurveTo(42,3,38,5,28,0);
-    ctx.fillStyle='#d4a030';ctx.fill();ctx.strokeStyle='rgba(255,200,50,0.7)';ctx.lineWidth=1;ctx.stroke();
-    // nostril
-    ctx.beginPath();ctx.ellipse(40,-1.5,2.5,1.5,0.2,0,Math.PI*2);ctx.fillStyle='rgba(80,40,0,0.8)';ctx.fill();
-    // eye
-    ctx.beginPath();ctx.ellipse(16,-6,5,4,0.3,0,Math.PI*2);ctx.fillStyle='#1a0800';ctx.fill();
-    ctx.beginPath();ctx.ellipse(16,-6,5,4,0.3,0,Math.PI*2);ctx.strokeStyle='rgba(255,200,60,0.9)';ctx.lineWidth=1.5;ctx.stroke();
-    ctx.beginPath();ctx.ellipse(17,-6,2,3,0,0,Math.PI*2);ctx.fillStyle='#ff4400';ctx.fill();
-    ctx.beginPath();ctx.arc(18,-7,1,0,Math.PI*2);ctx.fillStyle='rgba(255,255,200,0.9)';ctx.fill();
-    // horn
-    ctx.beginPath();ctx.moveTo(10,-14);ctx.lineTo(18,-32);ctx.lineTo(14,-14);
-    ctx.fillStyle='#e8c040';ctx.fill();ctx.strokeStyle='rgba(255,220,80,0.7)';ctx.lineWidth=1;ctx.stroke();
-    ctx.beginPath();ctx.moveTo(20,-12);ctx.lineTo(26,-26);ctx.lineTo(23,-12);
-    ctx.fillStyle='#d4a830';ctx.fill();ctx.strokeStyle='rgba(255,200,60,0.6)';ctx.lineWidth=1;ctx.stroke();
-    // whisker
-    ctx.beginPath();ctx.moveTo(36,4);ctx.bezierCurveTo(46,10,50,6,48,2);
-    ctx.strokeStyle='rgba(255,220,80,0.6)';ctx.lineWidth=1.2;ctx.stroke();
-    ctx.beginPath();ctx.moveTo(36,-4);ctx.bezierCurveTo(46,-10,50,-6,48,-2);
-    ctx.strokeStyle='rgba(255,220,80,0.6)';ctx.lineWidth=1.2;ctx.stroke();
-    // scales on head
-    for(let i=0;i<5;i++){
-      const sx=-5+i*6,sy=i%2===0?-10:-8;
-      ctx.beginPath();ctx.ellipse(sx,sy,3,2,-0.3,0,Math.PI*2);
-      ctx.fillStyle='rgba(255,200,60,0.3)';ctx.fill();
-      ctx.strokeStyle='rgba(255,180,40,0.4)';ctx.lineWidth=0.5;ctx.stroke();
-    }
-    ctx.restore();
-  }
-
-  function drawDragonSegment(x,y,angle,idx,total,scale){
-    ctx.save();ctx.translate(x,y);ctx.rotate(angle);ctx.scale(scale,scale);
-    const t=idx/total;
-    const w=13*(1-t*0.55)+4;
-    const grd=ctx.createLinearGradient(0,-w,0,w);
-    grd.addColorStop(0,'rgba(240,192,60,0.95)');
-    grd.addColorStop(0.4,'rgba(201,168,76,0.9)');
-    grd.addColorStop(1,'rgba(100,70,15,0.85)');
-    ctx.beginPath();ctx.ellipse(0,0,w*1.1,w,0,0,Math.PI*2);
-    ctx.fillStyle=grd;ctx.fill();
-    ctx.strokeStyle=`rgba(255,200,60,${0.5-t*0.3})`;ctx.lineWidth=0.8;ctx.stroke();
-    // scale detail
-    if(idx%3===0&&w>6){
-      ctx.beginPath();ctx.ellipse(0,-w*0.4,w*0.6,w*0.35,-0.2,0,Math.PI);
-      ctx.strokeStyle=`rgba(255,220,80,${0.4-t*0.2})`;ctx.lineWidth=0.8;ctx.stroke();
-    }
-    // spine spike
-    if(idx%2===0&&idx<total*0.7){
-      const sh=w*0.9*(1-t);
-      ctx.beginPath();ctx.moveTo(-3,-w);ctx.lineTo(0,-w-sh);ctx.lineTo(3,-w);
-      ctx.fillStyle=`rgba(255,180,30,${0.7-t*0.4})`;ctx.fill();
-    }
-    // wing (first few segments only)
-    if(idx>=2&&idx<=6){
-      const ws=(1-(idx-2)/5);
-      ctx.beginPath();ctx.moveTo(0,-w);
-      ctx.bezierCurveTo(-20*ws,-w*2-25*ws,-40*ws,-w-10*ws,-35*ws,-w+5);
-      ctx.bezierCurveTo(-25*ws,-w+2,0,-w,0,-w);
-      ctx.fillStyle=`rgba(180,120,20,${0.25*ws})`;ctx.fill();
-      ctx.strokeStyle=`rgba(255,200,60,${0.3*ws})`;ctx.lineWidth=0.8;ctx.stroke();
-      // wing veins
-      ctx.beginPath();ctx.moveTo(0,-w);ctx.lineTo(-28*ws,-w-18*ws);
-      ctx.strokeStyle=`rgba(255,200,60,${0.2*ws})`;ctx.lineWidth=0.5;ctx.stroke();
-      ctx.beginPath();ctx.moveTo(0,-w);ctx.bezierCurveTo(-10*ws,-w,(-35*ws),-w+5,(-35*ws),-w+5);
-      ctx.strokeStyle=`rgba(255,200,60,${0.15*ws})`;ctx.lineWidth=0.5;ctx.stroke();
-    }
-    ctx.restore();
-  }
-
-  // Noise function for organic movement
-  function noise(t,seed){return Math.sin(t*1.3+seed)*0.5+Math.sin(t*2.7+seed*1.4)*0.3+Math.sin(t*5.1+seed*2.1)*0.2;}
-
-  // Safe zone: avoid the LEFT half form area on desktop (roughly left 50% of screen, centre vertically)
-  // Dragon roams freely but steers away from the form zone
-  function getSafeWaypoint(){
-    // On wide screens, prefer right half. On small screens, use top/bottom strips.
-    const isWide=W>700;
-    if(isWide){
-      // right side: x from 52% to 95%, y from 5% to 95%
-      return {x:W*(0.52+Math.random()*0.43),y:H*(0.05+Math.random()*0.9)};
-    }else{
-      // mobile: top third or bottom third only
-      const top=Math.random()<0.5;
-      return {x:W*(0.05+Math.random()*0.9),y:top?H*(0.02+Math.random()*0.22):H*(0.75+Math.random()*0.22)};
-    }
-  }
-
-  function isInFormZone(x,y){
-    // Block the left 48% and vertical middle 20%-85% on wide screens (that's where the form lives)
-    if(W>700&&x<W*0.48&&y>H*0.1&&y<H*0.92)return true;
-    return false;
-  }
-
-  function resetDragon(){
-    const isWide=W>700;
-    // Always enter from the right side or top/bottom of right half
-    dragon.hx=W*(0.55+Math.random()*0.4);
-    dragon.hy=Math.random()<0.5?-80:H+80;
-    dragon.hdx=(Math.random()-.5)*1.5;
-    dragon.hdy=dragon.hy<0?dragon.speed:-dragon.speed;
-    dragon.t=0;dragon.done=false;dragon.active=true;dragon.fireParticles=[];
-    dragon.noiseSeed=Math.random()*100;
-    dragon.turnTimer=0;
-    dragon.turnTarget=getSafeWaypoint();
-    for(let i=0;i<dragon.segCount;i++){dragon.segments[i].x=dragon.hx-i*20;dragon.segments[i].y=dragon.hy;}
-  }
-
-  function updateDragon(){
-    if(!dragon.active)return;
-    dragon.t+=0.012;
-
-    // ── Smooth waypoint steering — gentle force only ──
-    const tx=dragon.turnTarget.x,ty=dragon.turnTarget.y;
-    const dstx=tx-dragon.hx,dsty=ty-dragon.hy;
-    const dist2=Math.sqrt(dstx*dstx+dsty*dsty);
-    if(dist2<90) dragon.turnTarget=getSafeWaypoint();
-    // Very gentle nudge toward waypoint — no sudden jerks
-    const steerStr=0.06;
-    dragon.hdx+=(dstx/Math.max(dist2,1))*steerStr;
-    dragon.hdy+=(dsty/Math.max(dist2,1))*steerStr;
-
-    // ── Soft noise undulation — gentle wave motion ──
-    dragon.hdx+=noise(dragon.t,dragon.noiseSeed)*0.04;
-    dragon.hdy+=noise(dragon.t*1.3,dragon.noiseSeed+30)*0.05;
-
-    // ── Speed clamp — smooth consistent speed, no lurching ──
-    const spd=Math.sqrt(dragon.hdx*dragon.hdx+dragon.hdy*dragon.hdy);
-    const targetSpd=dragon.speed;
-    if(spd>0){
-      // Lerp speed gently instead of hard set
-      const newSpd=spd+(targetSpd-spd)*0.08;
-      dragon.hdx=(dragon.hdx/spd)*newSpd;
-      dragon.hdy=(dragon.hdy/spd)*newSpd;
-    }
-
-    // ── Form zone — gradual push, not instant yank ──
-    if(isInFormZone(dragon.hx+dragon.hdx*12,dragon.hy)){
-      dragon.hdx+=0.25; // gentle rightward drift
-      if(isInFormZone(dragon.hx,dragon.hy)) dragon.hdx+=0.6; // stronger if already inside
-    }
-
-    // Soft screen wrap — stay near screen
-    if(dragon.hx<-60){dragon.hdx+=0.4;}
-    if(dragon.hx>W+60){dragon.hdx-=0.4;}
-    if(dragon.hy<-60){dragon.hdy+=0.4;}
-    if(dragon.hy>H+60){dragon.hdy-=0.4;}
-
-    dragon.hx+=dragon.hdx;
-    dragon.hy+=dragon.hdy;
-
-    // ── Segment chain — pure follow, no min-dist push (that caused twitching) ──
-    dragon.segments[0].x=dragon.hx;dragon.segments[0].y=dragon.hy;
-    const SEG_LEN=21;
-    for(let i=1;i<dragon.segCount;i++){
-      const prev=dragon.segments[i-1],curr=dragon.segments[i];
-      const dx=prev.x-curr.x,dy=prev.y-curr.y;
-      const dist=Math.sqrt(dx*dx+dy*dy);
-      if(dist>SEG_LEN){
-        const f=(1-SEG_LEN/dist)*0.6;
-        curr.x+=dx*f;curr.y+=dy*f;
-      }
-      // Smooth angle interpolation — prevents segment snap
-      const targetAngle=Math.atan2(prev.y-curr.y,prev.x-curr.x);
-      let da=targetAngle-curr.angle;
-      while(da>Math.PI)da-=Math.PI*2;while(da<-Math.PI)da+=Math.PI*2;
-      curr.angle+=da*0.35;
-    }
-    dragon.segments[0].angle=Math.atan2(dragon.hdy,dragon.hdx);
-
-    // ── Fire particles ──
-    if(Math.random()<0.35){
-      const fa=dragon.segments[0].angle;
-      dragon.fireParticles.push({
-        x:dragon.hx+Math.cos(fa)*52,y:dragon.hy+Math.sin(fa)*52,
-        vx:Math.cos(fa)*(2+Math.random()*3.5)+(Math.random()-.5)*0.6,
-        vy:Math.sin(fa)*(2+Math.random()*3.5)+(Math.random()-.5)*0.6,
-        r:3+Math.random()*5,life:1,
-        color:Math.random()<0.5?'255,140,20':'255,220,80'
-      });
-    }
-    dragon.fireParticles=dragon.fireParticles.filter(fp=>{
-      fp.x+=fp.vx;fp.y+=fp.vy;fp.vx*=0.97;fp.vy*=0.97;fp.r*=0.93;fp.life-=0.04;return fp.life>0;
-    });
-  }
-
-  function drawDragon(){
-    if(!dragon.active&&dragon.fireParticles.length===0)return;
-    // fire particles
-    dragon.fireParticles.forEach(fp=>{
-      const grd=ctx.createRadialGradient(fp.x,fp.y,0,fp.x,fp.y,fp.r*2);
-      grd.addColorStop(0,`rgba(${fp.color},${fp.life*0.9})`);
-      grd.addColorStop(0.5,`rgba(${fp.color},${fp.life*0.4})`);
-      grd.addColorStop(1,`rgba(${fp.color},0)`);
-      ctx.beginPath();ctx.arc(fp.x,fp.y,fp.r*2,0,Math.PI*2);ctx.fillStyle=grd;ctx.fill();
-    });
-    if(!dragon.active)return;
-    // body glow trail
-    for(let i=dragon.segCount-1;i>=0;i--){
-      const seg=dragon.segments[i];
-      const t=i/dragon.segCount;
-      const glow=ctx.createRadialGradient(seg.x,seg.y,0,seg.x,seg.y,18*(1-t*0.5));
-      glow.addColorStop(0,`rgba(201,168,76,${0.07*(1-t)})`);
-      glow.addColorStop(1,'rgba(201,168,76,0)');
-      ctx.beginPath();ctx.arc(seg.x,seg.y,18*(1-t*0.5),0,Math.PI*2);ctx.fillStyle=glow;ctx.fill();
-    }
-    // draw segments back to front
-    for(let i=dragon.segCount-1;i>=1;i--) drawDragonSegment(dragon.segments[i].x,dragon.segments[i].y,dragon.segments[i].angle,i,dragon.segCount,1);
-    // draw head
-    drawDragonHead(dragon.segments[0].x,dragon.segments[0].y,dragon.segments[0].angle,1);
   }
 
   let mx=window.innerWidth/2,my=window.innerHeight/2;
@@ -3460,7 +3235,6 @@ function addTyping(){
     parts.forEach(p=>{
       const a=p.a*(0.5+0.5*Math.sin(p.p+=p.ps));
       if(p.big){
-        // diamond shape for big particles
         ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.p*0.3);
         ctx.beginPath();ctx.moveTo(0,-p.r*2);ctx.lineTo(p.r,-0);ctx.lineTo(0,p.r*2);ctx.lineTo(-p.r,0);ctx.closePath();
         ctx.fillStyle=`rgba(255,220,80,${a*0.8})`;ctx.fill();
@@ -3473,7 +3247,6 @@ function addTyping(){
       p.x+=p.vx;p.y+=p.vy;
       if(p.y<-5){p.y=H+5;p.x=Math.random()*W;}
       if(p.x<-5)p.x=W+5;if(p.x>W+5)p.x=-5;
-      // mouse connections (only non-big)
       if(!p.big){
         const dx=p.x-mx,dy=p.y-my,d=Math.sqrt(dx*dx+dy*dy);
         if(d<150){
@@ -3482,8 +3255,6 @@ function addTyping(){
         }
       }
     });
-    // ── DRAGON ──
-    updateDragon();drawDragon();
     requestAnimationFrame(draw);
   }
   draw();
@@ -3643,12 +3414,24 @@ let isDark=true;
 function toggleTheme(){
   isDark=!isDark;
   document.body.classList.toggle('light',!isDark);
-  document.getElementById('theme-btn').textContent=isDark?'🌙':'☀️';
   localStorage.setItem('blemie_theme_mode',isDark?'dark':'light');
+  // Sync settings toggle
+  const thumb=document.getElementById('light-mode-thumb');
+  const btn=document.getElementById('light-mode-toggle');
+  if(thumb)thumb.style.left=isDark?'3px':'25px';
+  if(btn)btn.style.background=isDark?'rgba(201,168,76,.2)':'rgba(201,168,76,.7)';
 }
 (function(){
   const saved=localStorage.getItem('blemie_theme_mode');
-  if(saved==='light'){isDark=false;document.body.classList.add('light');const tb=document.getElementById('theme-btn');if(tb)tb.textContent='☀️';}
+  if(saved==='light'){
+    isDark=false;document.body.classList.add('light');
+    setTimeout(()=>{
+      const thumb=document.getElementById('light-mode-thumb');
+      const btn=document.getElementById('light-mode-toggle');
+      if(thumb)thumb.style.left='25px';
+      if(btn)btn.style.background='rgba(201,168,76,.7)';
+    },100);
+  }
 })();
 
 // ── WELCOME GREETING ──
